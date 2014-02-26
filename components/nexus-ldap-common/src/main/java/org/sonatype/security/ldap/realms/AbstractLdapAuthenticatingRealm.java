@@ -26,8 +26,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
-import org.apache.shiro.authc.credential.CredentialsMatcher;
+import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.ldap.AbstractLdapRealm;
@@ -51,6 +50,8 @@ public abstract class AbstractLdapAuthenticatingRealm
     setName(NAME);
     setAuthenticationCachingEnabled(true);
     setAuthorizationCachingEnabled(true);
+    // using simple credentials matcher
+    setCredentialsMatcher(new SimpleCredentialsMatcher());
   }
 
   @Override
@@ -64,7 +65,8 @@ public abstract class AbstractLdapAuthenticatingRealm
 
     try {
       this.ldapManager.authenticateUser(username, pass);
-      return this.buildAuthenticationInfo(username, null);
+      // creating AuthInfo with plain pass (relates to creds matcher too)
+      return new SimpleAuthenticationInfo(username, pass.toCharArray(), getName());
     }
     catch (org.sonatype.security.authentication.AuthenticationException e) {
       if (this.logger.isDebugEnabled()) {
@@ -99,18 +101,5 @@ public abstract class AbstractLdapAuthenticatingRealm
     }
     return null;
 
-  }
-
-  protected AuthenticationInfo buildAuthenticationInfo(String username, char[] password) {
-    return new SimpleAuthenticationInfo(username, password, getName());
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.apache.shiro.realm.AuthenticatingRealm#getCredentialsMatcher()
-   */
-  @Override
-  public CredentialsMatcher getCredentialsMatcher() {
-    return new AllowAllCredentialsMatcher();
   }
 }
