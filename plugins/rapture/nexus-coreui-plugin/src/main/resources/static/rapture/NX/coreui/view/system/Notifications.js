@@ -11,42 +11,27 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 Ext.define('NX.coreui.view.system.Notifications', {
-  extend: 'Ext.Panel',
+  extend: 'NX.view.SettingsPanel',
   alias: 'widget.nx-coreui-system-notifications',
-
-  layout: {
-    type: 'vbox',
-    align: 'stretch',
-    pack: 'start'
-  },
-
-  maxWidth: 1024,
-
-  style: {
-    margin: '20px'
-  },
-
-  defaults: {
-    style: {
-      margin: '0px 0px 20px 0px'
-    }
-  },
 
   items: [
     {
-      xtype: 'form',
+      xtype: 'nx-settingsform',
+      settingsForm: true,
+      settingsFormTitle: 'General system settings',
       items: [
         {
           xtype: 'label',
           html: '<p>E-mail notifications.</p>'
         },
         {
-          xtype: 'textfield',
+          xtype: 'nx-email',
+          name: 'systemEmail',
           fieldLabel: 'System E-mail'
         },
         {
           xtype: 'checkbox',
-          boxLabel: 'Enable E-mail notifications'
+          fieldLabel: 'Enable E-mail notifications'
         },
 
         // TODO: additional notification addresses and role configuration
@@ -57,31 +42,44 @@ Ext.define('NX.coreui.view.system.Notifications', {
         },
         {
           xtype: 'textfield',
+          name: 'host',
           fieldLabel: 'Host'
         },
         {
           xtype: 'numberfield',
+          name: 'port',
           fieldLabel: 'port'
         },
         {
           xtype: 'textfield',
+          name: 'username',
+          allowBlank: true,
           fieldLabel: 'Username'
         },
         {
           xtype: 'textfield',
+          name: 'password',
           fieldLabel: 'Password',
+          allowBlank: true,
           inputType: 'password'
         },
+        {
+          xtype: 'combo',
+          name: 'connection',
+          fieldLabel: 'Connection',
+          emptyText: 'select a connection type',
+          editable: false,
+          store: [
+            ['PLAIN', 'Use plain SMTP'],
+            ['SSL', 'Use plain SMTP (SSL)'],
+            ['TLS', 'Use STARTTLS negotiation (TLS)']
+          ],
+          queryMode: 'local'
+        }
 
         // TODO: mode plain/ssl/tls
 
         // TODO: test button
-      ],
-
-      buttonAlign: 'left',
-      buttons: [
-        { text: 'Save', ui: 'primary' },
-        { text: 'Discard' }
       ]
     }
   ]
