@@ -15,6 +15,8 @@
  */
 Ext.define('NX.ext.form.field.Url', {
   extend: 'Ext.form.field.Text',
-  alias: 'widget.nx-url'
+  alias: 'widget.nx-url',
+
+  vtype: 'url'
 
 });
