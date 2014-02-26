@@ -17,6 +17,16 @@ Ext.define('NX.ext.form.field.Url', {
   extend: 'Ext.form.field.Text',
   alias: 'widget.nx-url',
 
-  vtype: 'url'
+  vtype: 'url',
+
+  useTrustStore: function (field) {
+    if (Ext.String.startsWith(field.getValue(), 'https://')) {
+      return {
+        name: field.getName() + 'UseNexusTrustStore',
+        url: field
+      };
+    }
+    return undefined
+  }
 
 });
