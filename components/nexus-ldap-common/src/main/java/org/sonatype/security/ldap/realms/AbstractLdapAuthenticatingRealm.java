@@ -27,6 +27,8 @@ import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.base.Strings;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
@@ -86,6 +88,11 @@ public abstract class AbstractLdapAuthenticatingRealm
     UsernamePasswordToken upToken = (UsernamePasswordToken) token;
     String username = upToken.getUsername();
     String pass = String.valueOf(upToken.getPassword());
+
+    // Verify non-empty password
+    if (Strings.isNullOrEmpty(pass)) {
+      throw new AuthenticationException("Password must not be empty");
+    }
 
     try {
       this.ldapManager.authenticateUser(username, pass);
