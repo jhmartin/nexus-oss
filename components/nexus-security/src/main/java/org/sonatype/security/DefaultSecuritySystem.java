@@ -801,11 +801,19 @@ public class DefaultSecuritySystem
     // NOTE: we don't need to iterate all the Sec Managers, they use the same Realms, so one is fine.
     if (this.getSecurityManager().getRealms() != null) {
       for (Realm realm : this.getSecurityManager().getRealms()) {
+        // check if its a AuthenticatingRealm, if so clear the cache
+        if (AuthenticatingRealm.class.isInstance(realm)) {
+          // clear the cache
+          AuthenticatingRealm aRealm = (AuthenticatingRealm) realm;
+          Cache cache = aRealm.getAuthenticationCache();
+          if (cache != null) {
+            cache.clear();
+          }
+        }
         // check if its a AuthorizingRealm, if so clear the cache
         if (AuthorizingRealm.class.isInstance(realm)) {
           // clear the cache
           AuthorizingRealm aRealm = (AuthorizingRealm) realm;
-
           Cache cache = aRealm.getAuthorizationCache();
           if (cache != null) {
             cache.clear();
