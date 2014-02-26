@@ -342,7 +342,12 @@ public class DefaultSecuritySystem
           + " does not support writing.");
     }
 
+    final User oldUser = userManager.getUser(user.getUserId());
     userManager.updateUser(user);
+    if (oldUser.getStatus() == UserStatus.active && user.getStatus() != oldUser.getStatus()) {
+      // clear the realm authc caches as user got disabled
+      this.eventBus.post(new UserPrincipalsExpired(user.getUserId(), user.getSource()));
+    }
 
     // then save the users Roles
     for (UserManager tmpUserManager : userManagerFacade.getUserManagers().values()) {
@@ -363,7 +368,7 @@ public class DefaultSecuritySystem
       }
     }
 
-    // clear the realm caches
+    // clear the realm authz caches as user might get roles changed
     this.eventBus.post(new AuthorizationConfigurationChanged());
 
     return user;
