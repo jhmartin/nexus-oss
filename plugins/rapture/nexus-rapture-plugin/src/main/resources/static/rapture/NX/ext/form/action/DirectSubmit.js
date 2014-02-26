@@ -55,7 +55,7 @@ Ext.define('NX.ext.form.action.DirectSubmit', {
 
     //<override> call using field values if direct function formHandler = false
     //fn.call(window, formInfo.formEl, callback, me, options);
-    fn.call(window, fn.directCfg.method.formHandler ? formInfo.formEl : Ext.apply(form.getFieldValues(), me.getParams()), callback, me, options);
+    fn.call(window, fn.directCfg.method.formHandler ? formInfo.formEl : me.getParams(true), callback, me, options);
     //</override>
     me.cleanup(formInfo);
   }
