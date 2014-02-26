@@ -43,6 +43,7 @@ Ext.define('NX.coreui.view.repository.RepositorySettingsProxyMaven', {
         submitValue: false
       },
       {
+        xtype: 'nx-url',
         name: 'remoteStorageUrl',
         fieldLabel: 'Remote Storage Location',
         emptyText: 'enter an URL'

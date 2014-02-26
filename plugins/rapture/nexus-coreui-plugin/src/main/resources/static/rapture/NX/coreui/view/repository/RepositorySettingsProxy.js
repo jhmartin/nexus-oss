@@ -27,6 +27,7 @@ Ext.define('NX.coreui.view.repository.RepositorySettingsProxy', {
 
     me.items = [
       {
+        xtype: 'nx-url',
         name: 'remoteStorageUrl',
         fieldLabel: 'Remote Storage Location',
         emptyText: 'enter an URL'
