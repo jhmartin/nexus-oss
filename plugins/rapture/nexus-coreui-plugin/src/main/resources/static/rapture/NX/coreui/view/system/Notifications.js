@@ -18,7 +18,11 @@ Ext.define('NX.coreui.view.system.Notifications', {
     {
       xtype: 'nx-settingsform',
       settingsForm: true,
-      settingsFormTitle: 'General system settings',
+      settingsFormTitle: 'Notifications system settings',
+      api: {
+        load: 'NX.direct.coreui_SystemNotifications.read',
+        submit: 'NX.direct.coreui_SystemNotifications.update'
+      },
       items: [
         {
           xtype: 'label',
@@ -43,11 +47,13 @@ Ext.define('NX.coreui.view.system.Notifications', {
         {
           xtype: 'textfield',
           name: 'host',
+          itemId: 'host',
           fieldLabel: 'Host'
         },
         {
           xtype: 'numberfield',
           name: 'port',
+          itemId: 'port',
           fieldLabel: 'port'
         },
         {
@@ -65,19 +71,28 @@ Ext.define('NX.coreui.view.system.Notifications', {
         },
         {
           xtype: 'combo',
-          name: 'connection',
+          name: 'connectionType',
           fieldLabel: 'Connection',
           emptyText: 'select a connection type',
           editable: false,
           store: [
             ['PLAIN', 'Use plain SMTP'],
-            ['SSL', 'Use plain SMTP (SSL)'],
+            ['SSL', 'Use secure SMTP (SSL)'],
             ['TLS', 'Use STARTTLS negotiation (TLS)']
           ],
-          queryMode: 'local'
+          queryMode: 'local',
+          useTrustStore: function (combo) {
+            var form = combo.up('form');
+            if (combo.getValue() === 'SSL') {
+              return {
+                name: 'useNexusTrustStore',
+                host: form.down('#host'),
+                port: form.down('#port')
+              };
+            }
+            return undefined
+          }
         }
-
-        // TODO: mode plain/ssl/tls
 
         // TODO: test button
       ]
