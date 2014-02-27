@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-gimport org.sonatype.nexus.configuration.application.ApplicationDirectories;
+import org.sonatype.nexus.configuration.application.ApplicationDirectories;
 import org.sonatype.nexus.plugins.timeline.Entry;
 import org.sonatype.nexus.plugins.timeline.EntryListCallback;
 import org.sonatype.nexus.plugins.timeline.NexusTimeline;
