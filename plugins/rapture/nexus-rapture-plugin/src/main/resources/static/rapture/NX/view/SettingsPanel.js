@@ -20,7 +20,9 @@ Ext.define('NX.view.SettingsPanel', {
     pack: 'start'
   },
 
-  maxWidth: 1024,
+  autoScroll: true,
+
+  // TODO maxWidth: 1024,
 
   style: {
     margin: '20px'
