@@ -14,14 +14,6 @@ Ext.define('NX.view.masterdetail.Tabs', {
   extend: 'Ext.panel.Panel',
   alias: 'widget.nx-masterdetail-tabs',
 
-  title: 'Empty Selection',
-
-  region: 'south',
-  split: true,
-  collapsible: true,
-  flex: 0.5,
-  hidden: true,
-
   // HACK: For now make all detail panels light themed while we sort out the overall look of rapture
   ui: 'feature-detail',
 
