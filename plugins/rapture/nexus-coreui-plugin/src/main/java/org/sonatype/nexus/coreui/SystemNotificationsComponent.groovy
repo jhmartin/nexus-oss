@@ -22,7 +22,9 @@ import org.sonatype.nexus.configuration.application.NexusConfiguration
 import org.sonatype.nexus.email.NexusEmailer
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
+import org.sonatype.nexus.rapture.TrustStore
 
+import javax.annotation.Nullable
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -39,11 +41,19 @@ class SystemNotificationsComponent
 extends DirectComponentSupport
 {
 
+  private static final TRUST_STORE_TYPE = 'smtp';
+
+  private static final TRUST_STORE_ID = 'global';
+
   @Inject
   NexusEmailer emailer
 
   @Inject
   NexusConfiguration nexusConfiguration
+
+  @Inject
+  @Nullable
+  TrustStore trustStore
 
   @DirectMethod
   @RequiresPermissions('nexus:settings:read')
@@ -53,6 +63,7 @@ extends DirectComponentSupport
         port: emailer.SMTPPort,
         username: emailer.SMTPUsername,
         connectionType: getConnectionType(emailer),
+        useTrustStoreForSmtp: trustStore?.isEnabled(TRUST_STORE_TYPE, TRUST_STORE_ID),
         systemEmail: emailer.SMTPSystemEmailAddress.mailAddress
     )
   }
@@ -72,6 +83,7 @@ extends DirectComponentSupport
       SMTPTlsEnabled = notificationsXO.connectionType == SystemNotificationsXO.ConnectionType.TLS
     }
     nexusConfiguration.saveConfiguration();
+    trustStore?.setEnabled(TRUST_STORE_TYPE, TRUST_STORE_ID, notificationsXO.useTrustStoreForSmtp)
     return read();
   }
 

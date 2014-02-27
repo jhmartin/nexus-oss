@@ -28,6 +28,7 @@ extends RepositoryXO
   String remoteStatus
   String remoteStatusReason
   String remoteStorageUrl
+  Boolean useTrustStoreForRemoteStorageUrl
   Boolean autoBlockActive
   Boolean fileTypeValidation
   Boolean authEnabled

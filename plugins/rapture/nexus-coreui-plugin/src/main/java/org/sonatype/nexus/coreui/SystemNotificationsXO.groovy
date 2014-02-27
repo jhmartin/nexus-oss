@@ -29,6 +29,7 @@ class SystemNotificationsXO
   String username
   String password
   ConnectionType connectionType
+  Boolean useTrustStoreForSmtp
 
   public enum ConnectionType {
     PLAIN, SSL, TLS

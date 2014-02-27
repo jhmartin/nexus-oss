@@ -29,11 +29,13 @@ import org.sonatype.nexus.proxy.maven.maven2.M2LayoutedM1ShadowRepositoryConfigu
 import org.sonatype.nexus.proxy.registry.RepositoryRegistry
 import org.sonatype.nexus.proxy.registry.RepositoryTypeRegistry
 import org.sonatype.nexus.proxy.repository.*
+import org.sonatype.nexus.rapture.TrustStore
 import org.sonatype.nexus.rest.RepositoryURLBuilder
 import org.sonatype.nexus.templates.TemplateManager
 import org.sonatype.nexus.templates.repository.DefaultRepositoryTemplateProvider
 import org.sonatype.nexus.templates.repository.RepositoryTemplate
 
+import javax.annotation.Nullable
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -51,6 +53,9 @@ import java.util.regex.Pattern
 class RepositoryComponent
 extends DirectComponentSupport
 {
+
+  private static final TRUST_STORE_TYPE = 'repository';
+
   @Inject
   RepositoryRegistry repositoryRegistry
 
@@ -68,6 +73,10 @@ extends DirectComponentSupport
 
   @Inject
   DefaultRepositoryTemplateProvider repositoryTemplateProvider
+
+  @Inject
+  @Nullable
+  TrustStore trustStore
 
   private def typesToClass = [
       'proxy': ProxyRepository.class,
@@ -314,7 +323,7 @@ extends DirectComponentSupport
     repo.indexable = repositoryXO.indexable
   }
 
-  def static doUpdateProxy = { ProxyRepository repo, RepositoryProxyXO repositoryXO ->
+  def doUpdateProxy = { ProxyRepository repo, RepositoryProxyXO repositoryXO ->
     repo.browseable = repositoryXO.browseable
     repo.remoteUrl = repositoryXO.remoteStorageUrl
     repo.autoBlockActive = repositoryXO.autoBlockActive
@@ -341,6 +350,7 @@ extends DirectComponentSupport
           retrievalRetryCount: repositoryXO.retries
       )
     }
+    trustStore?.setEnabled(TRUST_STORE_TYPE, repo.id, repositoryXO.useTrustStoreForRemoteStorageUrl)
   }
 
   def static doUpdateProxyMaven = { MavenProxyRepository repo, RepositoryProxyMavenXO repositoryXO ->
@@ -422,7 +432,7 @@ extends DirectComponentSupport
     return xo
   }
 
-  def static doGetProxy(ProxyRepository repo, RepositoryXO xo) {
+  def doGetProxy(ProxyRepository repo, RepositoryXO xo) {
     if (!xo) xo = new RepositoryProxyXO();
     if (xo instanceof RepositoryProxyXO) {
       xo.with {
@@ -430,6 +440,7 @@ extends DirectComponentSupport
         def rcs = rsc?.remoteConnectionSettings
         proxyMode = repo.proxyMode
         remoteStorageUrl = repo.remoteUrl
+        useTrustStoreForRemoteStorageUrl = trustStore?.isEnabled(TRUST_STORE_TYPE, repo.id)
         autoBlockActive = repo.autoBlockActive
         fileTypeValidation = repo.fileTypeValidation
         userAgentCustomisation = rcs?.userAgentCustomizationString

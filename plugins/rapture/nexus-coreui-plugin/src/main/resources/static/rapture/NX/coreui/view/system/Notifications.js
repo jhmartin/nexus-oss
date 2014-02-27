@@ -85,7 +85,7 @@ Ext.define('NX.coreui.view.system.Notifications', {
             var form = combo.up('form');
             if (combo.getValue() === 'SSL') {
               return {
-                name: 'useNexusTrustStore',
+                name: 'useTrustStoreForSmtp',
                 host: form.down('#host'),
                 port: form.down('#port')
               };

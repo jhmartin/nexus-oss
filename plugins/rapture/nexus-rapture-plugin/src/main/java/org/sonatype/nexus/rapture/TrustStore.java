@@ -10,23 +10,17 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
+
+package org.sonatype.nexus.rapture;
+
 /**
- * An URL **{@link Ext.form.field.Text}**.
+ * @since 2.8
  */
-Ext.define('NX.ext.form.field.Url', {
-  extend: 'Ext.form.field.Text',
-  alias: 'widget.nx-url',
+public interface TrustStore
+{
 
-  vtype: 'url',
+  boolean isEnabled(String type, String id);
 
-  useTrustStore: function (field) {
-    if (Ext.String.startsWith(field.getValue(), 'https://')) {
-      return {
-        name: 'useTrustStoreFor' + Ext.String.capitalize(field.getName()),
-        url: field
-      };
-    }
-    return undefined
-  }
+  TrustStore setEnabled(String type, String id, Boolean enabled);
 
-});
+}

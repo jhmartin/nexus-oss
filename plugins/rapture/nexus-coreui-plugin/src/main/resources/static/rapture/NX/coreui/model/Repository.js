@@ -23,34 +23,35 @@ Ext.define('NX.coreui.model.Repository', {
     'exposed',
     'localStatus',
     'url',
-    'browseable',             // hosted/proxy
-    'writePolicy',            // hosted
-    'indexable',              // hosted maven
-    'repositoryPolicy',       // hosted/proxy maven
-    'proxyMode',              // proxy
-    'remoteStatus',           // proxy
-    'remoteStatusReason',     // proxy
-    'remoteStorageUrl',       // proxy
-    'autoBlockActive',        // proxy
-    'fileTypeValidation',     // proxy
-    'authEnabled',            // proxy
-    'authUsername',           // proxy
-    'authPassword',           // proxy
-    'authNtlmHost',           // proxy
-    'authNtlmDomain',         // proxy
-    'httpRequestSettings',    // proxy
-    'userAgentCustomisation', // proxy
-    'urlParameters',          // proxy
-    'timeout',                // proxy
-    'retries',                // proxy
-    'notFoundCacheTTL',       // proxy
-    'itemMaxAge',             // proxy
-    'downloadRemoteIndexes',  // proxy maven
-    'checksumPolicy',         // proxy maven
-    'artifactMaxAge',         // proxy maven
-    'metadataMaxAge',         // proxy maven
-    'memberRepositoryIds',    // group,
-    'synchronizeAtStartup',   // virtual
-    'shadowOf'                // virtual
+    'browseable',                         // hosted/proxy
+    'writePolicy',                        // hosted
+    'indexable',                          // hosted maven
+    'repositoryPolicy',                   // hosted/proxy maven
+    'proxyMode',                          // proxy
+    'remoteStatus',                       // proxy
+    'remoteStatusReason',                 // proxy
+    'remoteStorageUrl',                   // proxy
+    'useTrustStoreForRemoteStorageUrl',   // proxy
+    'autoBlockActive',                    // proxy
+    'fileTypeValidation',                 // proxy
+    'authEnabled',                        // proxy
+    'authUsername',                       // proxy
+    'authPassword',                       // proxy
+    'authNtlmHost',                       // proxy
+    'authNtlmDomain',                     // proxy
+    'httpRequestSettings',                // proxy
+    'userAgentCustomisation',             // proxy
+    'urlParameters',                      // proxy
+    'timeout',                            // proxy
+    'retries',                            // proxy
+    'notFoundCacheTTL',                   // proxy
+    'itemMaxAge',                         // proxy
+    'downloadRemoteIndexes',              // proxy maven
+    'checksumPolicy',                     // proxy maven
+    'artifactMaxAge',                     // proxy maven
+    'metadataMaxAge',                     // proxy maven
+    'memberRepositoryIds',                // group,
+    'synchronizeAtStartup',               // virtual
+    'shadowOf'                            // virtual
   ]
 });
