@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.sonatype.nexus.configuration.application.ApplicationConfiguration;
+gimport org.sonatype.nexus.configuration.application.ApplicationDirectories;
 import org.sonatype.nexus.plugins.timeline.Entry;
 import org.sonatype.nexus.plugins.timeline.EntryListCallback;
 import org.sonatype.nexus.plugins.timeline.NexusTimeline;
@@ -48,7 +48,7 @@ public class DefaultNexusTimelineTest
     extends TestSupport
 {
   @Mock
-  private ApplicationConfiguration applicationConfiguration;
+  private ApplicationDirectories applicationDirectories;
 
   @Mock
   private EventBus eventBus;
@@ -60,13 +60,13 @@ public class DefaultNexusTimelineTest
     final File timelineWorkdir = util.resolveFile("target/workdir");
     DirSupport.deleteIfExists(timelineWorkdir.toPath());
     timelineWorkdir.mkdirs();
-    when(applicationConfiguration.getWorkingDirectory(anyString())).thenReturn(timelineWorkdir);
+    when(applicationDirectories.getWorkDirectory(anyString())).thenReturn(timelineWorkdir);
 
     final Module testModule = new AbstractModule()
     {
       @Override
       protected void configure() {
-        bind(ApplicationConfiguration.class).toInstance(applicationConfiguration);
+        bind(ApplicationDirectories.class).toInstance(applicationDirectories);
         bind(EventBus.class).toInstance(eventBus);
         bind(NexusTimeline.class).to(DefaultNexusTimeline.class).asEagerSingleton();
       }
