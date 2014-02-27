@@ -50,6 +50,8 @@ Ext.define('NX.ext.grid.plugin.FilterBox', {
         }
       ]);
     }
+
+    me.grid.on('filteringautocleared', me.syncSearchBox, me);
   },
 
   /**
@@ -70,6 +72,16 @@ Ext.define('NX.ext.grid.plugin.FilterBox', {
     var me = this;
 
     me.clearFilter();
+  },
+
+  /**
+   * @private
+   * Syncs filtering value with search box.
+   */
+  syncSearchBox: function () {
+    var me = this;
+
+    me.grid.down('nx-searchbox').setValue(me.filterValue);
   }
 
 });

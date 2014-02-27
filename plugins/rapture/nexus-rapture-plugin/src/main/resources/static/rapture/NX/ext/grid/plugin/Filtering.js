@@ -81,8 +81,10 @@ Ext.define('NX.ext.grid.plugin.Filtering', {
   clearFilter: function () {
     var me = this;
 
-    me.filterValue = undefined;
-    me.applyFilter();
+    if (me.filterValue) {
+      me.filterValue = undefined;
+      me.applyFilter();
+    }
   },
 
   /**
@@ -92,7 +94,6 @@ Ext.define('NX.ext.grid.plugin.Filtering', {
   applyFilter: function () {
     var me = this;
 
-    me.filteredStore.clearFilter();
     if (me.filterValue) {
       me.logDebug(
           'Filtering ' + me.filteredStore.storeId + ' on [' + me.filterValue + '] using fields: ' + me.filteredFields
@@ -110,7 +111,20 @@ Ext.define('NX.ext.grid.plugin.Filtering', {
       }, me);
     }
     else {
+      me.filteredStore.clearFilter();
       me.logDebug('Filtering cleared on ' + me.filteredStore.storeId);
+    }
+  },
+
+  /**
+   * @private
+   * Clear filter value if store is filtered from outside.
+   */
+  syncFilterValue: function () {
+    var me = this;
+    if (me.filterValue) {
+      me.clearFilter();
+      me.grid.fireEvent('filteringautocleared');
     }
   },
 
@@ -165,7 +179,7 @@ Ext.define('NX.ext.grid.plugin.Filtering', {
 
   /**
    * @private
-   * Unbinds form current store and register itself to provided store.
+   * Unbinds from current store and register itself to provided store.
    * @param store to register itself to
    * @param filteredFields fields to be used while filtering
    */
@@ -190,6 +204,7 @@ Ext.define('NX.ext.grid.plugin.Filtering', {
     if (store) {
       me.logDebug('Binding to store ' + me.filteredStore.storeId);
       me.grid.mon(store, 'load', me.applyFilter, me);
+      me.grid.mon(store, 'filterchange', me.syncFilterValue, me);
     }
   },
 
@@ -203,6 +218,7 @@ Ext.define('NX.ext.grid.plugin.Filtering', {
     if (store) {
       me.logDebug('Unbinding from store ' + me.filteredStore.storeId);
       me.grid.mun(store, 'load', me.applyFilter, me);
+      me.grid.mun(store, 'filterchange', me.syncFilterValue, me);
     }
   },
 
