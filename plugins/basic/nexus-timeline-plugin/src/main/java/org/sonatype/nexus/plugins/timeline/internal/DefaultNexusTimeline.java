@@ -37,6 +37,8 @@ import io.kazuki.v0.internal.v2schema.Attribute;
 import io.kazuki.v0.internal.v2schema.Schema;
 import io.kazuki.v0.store.KazukiException;
 import io.kazuki.v0.store.journal.JournalStore;
+import io.kazuki.v0.store.journal.PartitionInfo;
+import io.kazuki.v0.store.journal.PartitionInfoSnapshot;
 import io.kazuki.v0.store.keyvalue.KeyValueIterable;
 import io.kazuki.v0.store.keyvalue.KeyValuePair;
 import io.kazuki.v0.store.lifecycle.Lifecycle;
@@ -81,27 +83,26 @@ public class DefaultNexusTimeline
   // EBus handlers
 
   @Subscribe
-  public void on(final NexusInitializedEvent e) {
+  public void on(final NexusInitializedEvent evt) {
     try {
       start();
     }
-    catch (Exception e1) {
-      log.warn("Could not start timeline", e1);
+    catch (Exception e) {
+      log.warn("Could not start timeline", e);
     }
   }
 
   @Subscribe
-  public void on(final NexusStoppedEvent e) {
+  public void on(final NexusStoppedEvent evt) {
     try {
       stop();
     }
-    catch (Exception e1) {
-      log.warn("Could not stop timeline", e1);
+    catch (Exception e) {
+      log.warn("Could not stop timeline", e);
     }
   }
 
-  // API
-
+  // LifecycleSupport
 
   @Override
   public void doStart()
@@ -134,6 +135,8 @@ public class DefaultNexusTimeline
     lifecycle.shutdown();
     log.info("Stopped Timeline...");
   }
+
+  // API
 
   @Override
   @Deprecated
@@ -208,9 +211,25 @@ public class DefaultNexusTimeline
     if (!isStarted()) {
       return;
     }
-    // TODO: How to delete selectively the tail of journal? Event if we neglect "days"..
-    // Basically, purge was needed to lessen Lucene index size and it's impact on resources.
-    // If Kazuki "behaves" way better, we can simply tell users to remove their "Purge Timeline" tasks
-    // as that task becomes obsolete.
+    // NOTE: This is merely a hack, we need to come up with some general partitioning strategy
+    // Could we partition per-day? Or just modify the semantics of the input maybe, as purge
+    // was painfully needed for Lucene backed Timeline, but with Kazuki it might get non-issue?
+    try {
+      if (days == 0) {
+        // today included, lose the current partition, so that any new events are separate from those that exist already
+        journalStore.closeActivePartition();
+      }
+      try (KeyValueIterable<PartitionInfoSnapshot> partitions = journalStore.getAllPartitions()) {
+        for (PartitionInfo partition : partitions) {
+          if (!partition.isClosed()) {
+            continue;
+          }
+          journalStore.dropPartition(partition.getPartitionId());
+        }
+      }
+    }
+    catch (KazukiException e) {
+      log.warn("Failed to purge Timeline store", e);
+    }
   }
 }
