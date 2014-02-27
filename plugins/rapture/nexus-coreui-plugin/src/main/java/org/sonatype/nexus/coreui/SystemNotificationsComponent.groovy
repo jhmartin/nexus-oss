@@ -22,6 +22,7 @@ import org.sonatype.nexus.configuration.application.NexusConfiguration
 import org.sonatype.nexus.email.NexusEmailer
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
+import org.sonatype.nexus.extdirect.model.Password
 import org.sonatype.nexus.rapture.TrustStore
 
 import javax.annotation.Nullable
@@ -62,6 +63,7 @@ extends DirectComponentSupport
         host: emailer.SMTPHostname,
         port: emailer.SMTPPort,
         username: emailer.SMTPUsername,
+        password: Password.fakePassword(),
         connectionType: getConnectionType(emailer),
         useTrustStoreForSmtp: trustStore?.isEnabled(TRUST_STORE_TYPE, TRUST_STORE_ID),
         systemEmail: emailer.SMTPSystemEmailAddress.mailAddress
@@ -77,7 +79,7 @@ extends DirectComponentSupport
       SMTPHostname = notificationsXO.host ?: ''
       if (notificationsXO.port) SMTPPort = notificationsXO.port
       SMTPUsername = notificationsXO.username
-      SMTPPassword = notificationsXO.password
+      if (notificationsXO.password?.valid) SMTPPassword = notificationsXO.password.value
       SMTPSystemEmailAddress = new Address(notificationsXO.systemEmail?.trim())
       SMTPSslEnabled = notificationsXO.connectionType == SystemNotificationsXO.ConnectionType.SSL
       SMTPTlsEnabled = notificationsXO.connectionType == SystemNotificationsXO.ConnectionType.TLS

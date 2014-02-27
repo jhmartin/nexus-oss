@@ -45,7 +45,6 @@ Ext.define('NX.coreui.view.system.Notifications', {
           html: '<p>SMTP settings.</p>'
         },
         {
-          xtype: 'textfield',
           name: 'host',
           itemId: 'host',
           fieldLabel: 'Host'
@@ -57,17 +56,15 @@ Ext.define('NX.coreui.view.system.Notifications', {
           fieldLabel: 'port'
         },
         {
-          xtype: 'textfield',
           name: 'username',
           allowBlank: true,
           fieldLabel: 'Username'
         },
         {
-          xtype: 'textfield',
+          xtype: 'nx-password',
           name: 'password',
           fieldLabel: 'Password',
-          allowBlank: true,
-          inputType: 'password'
+          allowBlank: true
         },
         {
           xtype: 'combo',

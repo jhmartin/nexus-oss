@@ -25,10 +25,8 @@ import org.sonatype.nexus.configuration.application.GlobalRemoteProxySettings
 import org.sonatype.nexus.configuration.application.NexusConfiguration
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
-import org.sonatype.nexus.proxy.repository.DefaultRemoteHttpProxySettings
-import org.sonatype.nexus.proxy.repository.NtlmRemoteAuthenticationSettings
-import org.sonatype.nexus.proxy.repository.RemoteHttpProxySettings
-import org.sonatype.nexus.proxy.repository.UsernamePasswordRemoteAuthenticationSettings
+import org.sonatype.nexus.extdirect.model.Password
+import org.sonatype.nexus.proxy.repository.*
 
 import javax.inject.Inject
 import javax.inject.Named
@@ -71,6 +69,7 @@ extends DirectComponentSupport
     xo.httpPort = port
     xo.httpAuthEnabled = StringUtils.isNotBlank(username as String)
     xo.httpAuthUsername = username
+    xo.httpAuthPassword = Password.fakePassword()
     xo.httpAuthNtlmHost = ntlmHost
     xo.httpAuthNtlmDomain = ntlmDomain
 
@@ -80,6 +79,7 @@ extends DirectComponentSupport
     xo.httpsPort = port
     xo.httpsAuthEnabled = StringUtils.isNotBlank(username as String)
     xo.httpsAuthUsername = username
+    xo.httpAuthPassword = Password.fakePassword()
     xo.httpsAuthNtlmHost = ntlmHost
     xo.httpsAuthNtlmDomain = ntlmDomain
 
@@ -97,14 +97,18 @@ extends DirectComponentSupport
     connectionSettings.connectionTimeout = xo.timeout
     connectionSettings.retrievalRetryCount = xo.retries
 
-    proxySettings.nonProxyHosts = xo.httpEnabled?xo.nonProxyHosts:null
+    proxySettings.nonProxyHosts = xo.httpEnabled ? xo.nonProxyHosts : null
     proxySettings.httpProxySettings = toRemoteHttpProxySettings(
         xo.httpEnabled, xo.httpHost, xo.httpPort,
-        xo.httpAuthEnabled, xo.httpAuthUsername, xo.httpAuthPassword, xo.httpAuthNtlmHost, xo.httpAuthNtlmDomain
+        xo.httpAuthEnabled,
+        xo.httpAuthUsername, getPassword(xo.httpAuthPassword, proxySettings.httpProxySettings?.proxyAuthentication),
+        xo.httpAuthNtlmHost, xo.httpAuthNtlmDomain
     )
     proxySettings.httpsProxySettings = toRemoteHttpProxySettings(
         xo.httpsEnabled, xo.httpsHost, xo.httpsPort,
-        xo.httpsAuthEnabled, xo.httpsAuthUsername, xo.httpsAuthPassword, xo.httpsAuthNtlmHost, xo.httpsAuthNtlmDomain
+        xo.httpsAuthEnabled,
+        xo.httpsAuthUsername, getPassword(xo.httpsAuthPassword, proxySettings.httpsProxySettings?.proxyAuthentication),
+        xo.httpsAuthNtlmHost, xo.httpsAuthNtlmDomain
     )
 
     nexusConfiguration.saveConfiguration();
@@ -168,4 +172,15 @@ extends DirectComponentSupport
     }
     return null
   }
+
+  def static String getPassword(Password password, RemoteAuthenticationSettings settings) {
+    if (password?.valid) {
+      return password.value
+    }
+    if (settings instanceof UsernamePasswordRemoteAuthenticationSettings) {
+      return settings.password
+    }
+    return null
+  }
+
 }

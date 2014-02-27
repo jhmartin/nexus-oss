@@ -14,6 +14,7 @@
 package org.sonatype.nexus.coreui
 
 import groovy.transform.ToString
+import org.sonatype.nexus.extdirect.model.Password
 
 /**
  * HTTP System Settings exchange object.
@@ -42,7 +43,7 @@ class SystemHttpXO
 
   String httpAuthUsername
 
-  String httpAuthPassword
+  Password httpAuthPassword
 
   String httpAuthNtlmHost
 
@@ -58,7 +59,7 @@ class SystemHttpXO
 
   String httpsAuthUsername
 
-  String httpsAuthPassword
+  Password httpsAuthPassword
 
   String httpsAuthNtlmHost
 

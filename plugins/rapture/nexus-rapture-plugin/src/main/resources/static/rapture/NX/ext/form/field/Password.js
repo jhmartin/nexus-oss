@@ -1,4 +1,4 @@
-/**
+/*
  * Sonatype Nexus (TM) Open Source Version
  * Copyright (c) 2007-2013 Sonatype, Inc.
  * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
@@ -10,29 +10,37 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-
-package org.sonatype.nexus.coreui
-
-import groovy.transform.ToString
-import org.sonatype.nexus.extdirect.model.Password
-
 /**
- * Notifications System Settings exchange object.
- *
- * @since 2.8
+ * An password **{@link Ext.form.field.Text}**.
  */
-@ToString(includePackage = false, includeNames = true)
-class SystemNotificationsXO
-{
-  String systemEmail
-  String host
-  Integer port
-  String username
-  Password password
-  ConnectionType connectionType
-  Boolean useTrustStoreForSmtp
+Ext.define('NX.ext.form.field.Password', {
+  extend: 'Ext.form.field.Text',
+  alias: 'widget.nx-password',
 
-  public enum ConnectionType {
-    PLAIN, SSL, TLS
+  requires: [
+    'NX.util.Base64'
+  ],
+
+  inputType: 'password',
+
+  getValue: function () {
+    var me = this,
+        value = me.callParent(arguments);
+
+    if (value) {
+      return NX.util.Base64.encode(value);
+    }
+    return value;
+  },
+
+  setValue: function (value) {
+    var me = this;
+
+    if (value) {
+      arguments[0] = NX.util.Base64.decode(value);
+    }
+
+    return me.callParent(arguments);
   }
-}
+
+});

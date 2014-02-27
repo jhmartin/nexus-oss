@@ -14,6 +14,7 @@
 package org.sonatype.nexus.coreui
 
 import groovy.transform.ToString
+import org.sonatype.nexus.extdirect.model.Password
 import org.sonatype.security.usermanagement.UserStatus
 
 /**
@@ -25,16 +26,10 @@ import org.sonatype.security.usermanagement.UserStatus
 class UserXO
 {
   String id
-
   String realm
-
   String firstName
-
   String lastName
-
   String email
-
   UserStatus status
-
-  String password
+  Password password
 }

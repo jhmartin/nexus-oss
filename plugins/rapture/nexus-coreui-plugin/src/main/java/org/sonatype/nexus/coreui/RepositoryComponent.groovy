@@ -21,6 +21,7 @@ import org.codehaus.plexus.util.xml.Xpp3Dom
 import org.sonatype.nexus.configuration.application.NexusConfiguration
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
+import org.sonatype.nexus.extdirect.model.Password
 import org.sonatype.nexus.proxy.ResourceStoreRequest
 import org.sonatype.nexus.proxy.item.RepositoryItemUid
 import org.sonatype.nexus.proxy.maven.MavenHostedRepository
@@ -333,12 +334,15 @@ extends DirectComponentSupport
     if (repositoryXO.authEnabled) {
       if (repositoryXO.authNtlmHost || repositoryXO.authNtlmDomain) {
         repo.remoteAuthenticationSettings = new NtlmRemoteAuthenticationSettings(
-            repositoryXO.authUsername, repositoryXO.authPassword, repositoryXO.authNtlmDomain, repositoryXO.authNtlmHost
+            repositoryXO.authUsername,
+            getPassword(repositoryXO.authPassword, repo.remoteAuthenticationSettings),
+            repositoryXO.authNtlmDomain, repositoryXO.authNtlmHost
         )
       }
       else {
         repo.remoteAuthenticationSettings = new UsernamePasswordRemoteAuthenticationSettings(
-            repositoryXO.authUsername, repositoryXO.authPassword
+            repositoryXO.authUsername,
+            getPassword(repositoryXO.authPassword, repo.remoteAuthenticationSettings),
         )
       }
     }
@@ -455,7 +459,7 @@ extends DirectComponentSupport
           authEnabled = true
           if (ras instanceof UsernamePasswordRemoteAuthenticationSettings) {
             authUsername = ras.username
-            authPassword = ras.password
+            authPassword = Password.fakePassword()
           }
           if (ras instanceof NtlmRemoteAuthenticationSettings) {
             authNtlmHost = ras.ntlmHost
@@ -542,6 +546,16 @@ extends DirectComponentSupport
       }
     }
     return name
+  }
+
+  def static String getPassword(Password password, RemoteAuthenticationSettings settings) {
+    if (password?.valid) {
+      return password.value
+    }
+    if (settings instanceof UsernamePasswordRemoteAuthenticationSettings) {
+      return settings.password
+    }
+    return null
   }
 
 }

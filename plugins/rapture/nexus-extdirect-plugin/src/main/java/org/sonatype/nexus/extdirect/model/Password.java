@@ -1,4 +1,4 @@
-/**
+/*
  * Sonatype Nexus (TM) Open Source Version
  * Copyright (c) 2007-2013 Sonatype, Inc.
  * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
@@ -11,28 +11,40 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 
-package org.sonatype.nexus.coreui
-
-import groovy.transform.ToString
-import org.sonatype.nexus.extdirect.model.Password
+package org.sonatype.nexus.extdirect.model;
 
 /**
- * Notifications System Settings exchange object.
+ * A password field.
  *
  * @since 2.8
  */
-@ToString(includePackage = false, includeNames = true)
-class SystemNotificationsXO
+public class Password
+    extends Base64String
 {
-  String systemEmail
-  String host
-  Integer port
-  String username
-  Password password
-  ConnectionType connectionType
-  Boolean useTrustStoreForSmtp
 
-  public enum ConnectionType {
-    PLAIN, SSL, TLS
+  public static final String FAKE_PASSWORD = "|N|E|X|U|S|";
+
+  public Password() {
   }
+
+  public Password(final String value) {
+    super(value);
+  }
+
+  public boolean isValid() {
+    return !FAKE_PASSWORD.equals(getValue());
+  }
+
+  public String getValueIfValid() {
+    return isValid() ? getValue() : null;
+  }
+
+  public static Password password(final String value) {
+    return new Password(value);
+  }
+
+  public static Password fakePassword() {
+    return password(FAKE_PASSWORD);
+  }
+
 }

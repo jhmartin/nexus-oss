@@ -52,6 +52,9 @@ public class ExtDirectModule
         directServletConfig.put(
             GlobalParameters.JSON_REQUEST_PROCESSOR_THREAD_CLASS, ExtDirectJsonRequestProcessorThread.class.getName()
         );
+        directServletConfig.put(
+            GlobalParameters.GSON_BUILDER_CONFIGURATOR_CLASS, ExtDirectGsonBuilderConfigurator.class.getName()
+        );
 
         serve(MOUNT_POINT + "*").with(ExtDirectServlet.class, directServletConfig);
         filter(MOUNT_POINT + "*").through(SecurityFilter.class);

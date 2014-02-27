@@ -19,6 +19,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication
 import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
+import org.sonatype.nexus.extdirect.model.Password
 import org.sonatype.security.SecuritySystem
 import org.sonatype.security.usermanagement.DefaultUser
 import org.sonatype.security.usermanagement.UserSearchCriteria
@@ -48,7 +49,8 @@ extends DirectComponentSupport
         firstName: it.firstName,
         lastName: it.lastName,
         email: it.emailAddress,
-        status: it.status
+        status: it.status,
+        password: Password.fakePassword()
     )
   }
 
@@ -76,7 +78,7 @@ extends DirectComponentSupport
         lastName: userXO.lastName,
         emailAddress: userXO.email,
         status: userXO.status
-    ), userXO.password))
+    ), userXO.password?.valueIfValid))
   }
 
   /**

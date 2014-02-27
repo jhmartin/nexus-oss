@@ -58,7 +58,8 @@ Ext.define('NX.coreui.view.system.Http', {
               fieldLabel: 'Port',
               minValue: 1,
               maxValue: 65535,
-              allowDecimals: false
+              allowDecimals: false,
+              allowBlank: false
             },
             {
               xtype: 'nx-optionalfieldset',
@@ -96,7 +97,8 @@ Ext.define('NX.coreui.view.system.Http', {
             {
               xtype: 'textfield',
               name: 'httpsHost',
-              fieldLabel: 'Host'
+              fieldLabel: 'Host',
+              allowBlank: false
             },
             {
               xtype: 'numberfield',
@@ -104,7 +106,8 @@ Ext.define('NX.coreui.view.system.Http', {
               fieldLabel: 'Port',
               minValue: 1,
               maxValue: 65535,
-              allowDecimals: false
+              allowDecimals: false,
+              allowBlank: false
             },
             {
               xtype: 'nx-optionalfieldset',

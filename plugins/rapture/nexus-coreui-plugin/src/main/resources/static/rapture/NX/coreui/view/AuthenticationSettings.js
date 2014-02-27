@@ -31,9 +31,9 @@ Ext.define('NX.coreui.view.AuthenticationSettings', {
         allowBlank: false
       },
       {
+        xtype: 'nx-password',
         name: namePrefix + 'uthPassword',
-        fieldLabel: 'Password',
-        inputType: 'password'
+        fieldLabel: 'Password'
       },
       {
         name: namePrefix + 'uthNtlmHost',

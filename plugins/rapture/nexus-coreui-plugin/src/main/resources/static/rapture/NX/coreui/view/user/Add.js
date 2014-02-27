@@ -32,18 +32,16 @@ Ext.define('NX.coreui.view.user.Add', {
     me.down('#id').setReadOnly(false);
 
     me.down('form').insert(5, {
-      xtype: 'textfield',
+      xtype: 'nx-password',
       name: 'password',
       fieldLabel: 'Password',
-      emptyText: 'enter a password',
-      inputType: 'password'
+      emptyText: 'enter a password'
     });
 
     me.down('form').insert(6, {
-      xtype: 'textfield',
+      xtype: 'nx-password',
       fieldLabel: 'Confirm Password',
       emptyText: 'confirm above password',
-      inputType: 'password',
       submitValue: false
     });
   }

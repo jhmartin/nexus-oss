@@ -14,6 +14,7 @@
 package org.sonatype.nexus.coreui
 
 import groovy.transform.ToString
+import org.sonatype.nexus.extdirect.model.Password
 
 /**
  * Repository Proxy exchange object.
@@ -33,7 +34,7 @@ extends RepositoryXO
   Boolean fileTypeValidation
   Boolean authEnabled
   String authUsername
-  String authPassword
+  Password authPassword
   String authNtlmHost
   String authNtlmDomain
   Boolean httpRequestSettings
