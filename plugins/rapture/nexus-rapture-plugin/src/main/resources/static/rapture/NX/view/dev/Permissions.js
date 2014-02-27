@@ -31,7 +31,8 @@ Ext.define('NX.view.dev.Permissions', {
   ],
 
   plugins: [
-    { pluginId: 'editor', ptype: 'rowediting', clicksToEdit: 1, errorSummary: false }
+    { pluginId: 'editor', ptype: 'rowediting', clicksToEdit: 1, errorSummary: false },
+    'gridfilterbox'
   ],
 
   tbar: [

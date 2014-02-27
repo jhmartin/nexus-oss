@@ -34,5 +34,11 @@ Ext.define('NX.view.dev.Messages', {
     { text: 'type', dataIndex: 'type' },
     { text: 'text', dataIndex: 'text', flex: 1 },
     { text: 'timestamp', dataIndex: 'timestamp', width: 300 }
+  ],
+
+  plugins: [
+    { ptype: 'rowediting', clicksToEdit: 1 },
+    'gridfilterbox'
   ]
+
 });

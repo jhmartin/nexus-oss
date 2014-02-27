@@ -38,5 +38,11 @@ Ext.define('NX.view.dev.Icons', {
         return value;
       }
     }
+  ],
+
+  plugins: [
+    { ptype: 'rowediting', clicksToEdit: 1 },
+    'gridfilterbox'
   ]
+
 });

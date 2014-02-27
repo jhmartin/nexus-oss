@@ -41,7 +41,8 @@ Ext.define('NX.view.dev.Features', {
   ],
 
   plugins: [
-    { ptype: 'rowediting', clicksToEdit: 1 }
+    { ptype: 'rowediting', clicksToEdit: 1 },
+    'gridfilterbox'
   ],
 
   viewConfig: {
