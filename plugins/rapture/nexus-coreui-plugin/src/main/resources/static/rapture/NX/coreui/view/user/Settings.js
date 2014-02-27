@@ -23,7 +23,6 @@ Ext.define('NX.coreui.view.user.Settings', {
 
     me.items = [
       {
-        xtype: 'textfield',
         name: 'id',
         itemId: 'id',
         readOnly: true,
@@ -31,19 +30,17 @@ Ext.define('NX.coreui.view.user.Settings', {
         emptyText: 'enter a user id'
       },
       {
-        xtype: 'textfield',
         name: 'firstName',
         fieldLabel: 'First Name',
         emptyText: 'enter first name'
       },
       {
-        xtype: 'textfield',
         name: 'lastName',
         fieldLabel: 'Last Name',
         emptyText: 'enter last name'
       },
       {
-        xtype: 'textfield',
+        xtype: 'nx-email',
         name: 'email',
         fieldLabel: 'Email',
         emptyText: 'enter an email address'
