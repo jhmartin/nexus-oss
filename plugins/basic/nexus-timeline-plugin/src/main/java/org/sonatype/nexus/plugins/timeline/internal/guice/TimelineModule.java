@@ -18,7 +18,7 @@ import java.io.File;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.nexus.configuration.application.ApplicationConfiguration;
+import org.sonatype.nexus.configuration.application.ApplicationDirectories;
 import org.sonatype.nexus.plugins.timeline.TimelinePlugin;
 import org.sonatype.nexus.plugins.timeline.internal.DefaultNexusTimeline;
 
@@ -41,16 +41,14 @@ import io.kazuki.v0.store.sequence.SequenceServiceConfiguration;
 public class TimelineModule
     extends AbstractModule
 {
-  private static final String MODULE_NAME = TimelinePlugin.ARTIFACT_ID;
-
   @Override
   protected void configure() {
-    install(new LifecycleModule(MODULE_NAME));
+    install(new LifecycleModule(TimelinePlugin.ARTIFACT_ID));
 
-    bind(JdbiDataSourceConfiguration.class).annotatedWith(Names.named(MODULE_NAME))
+    bind(JdbiDataSourceConfiguration.class).annotatedWith(Names.named(TimelinePlugin.ARTIFACT_ID))
         .toProvider(JdbiConfigurationProvider.class).in(Scopes.SINGLETON);
 
-    install(new EasyPartitionedJournalStoreModule(MODULE_NAME, null)
+    install(new EasyPartitionedJournalStoreModule(TimelinePlugin.ARTIFACT_ID, null)
         .withSequenceConfig(getSequenceServiceConfiguration())
         .withKeyValueStoreConfig(getKeyValueStoreConfiguration())
     );
@@ -61,7 +59,7 @@ public class TimelineModule
 
     builder.withDbType("h2");
     builder.withGroupName("nexus");
-    builder.withStoreName(TimelinePlugin.ID_PREFIX);
+    builder.withStoreName("timeline");
     builder.withStrictTypeCreation(true);
 
     return builder.build();
@@ -72,7 +70,7 @@ public class TimelineModule
 
     builder.withDbType("h2");
     builder.withGroupName("nexus");
-    builder.withStoreName(TimelinePlugin.ID_PREFIX);
+    builder.withStoreName("timeline");
     builder.withPartitionName("default");
     builder.withPartitionSize(100_000L);
     builder.withStrictTypeCreation(true);
@@ -84,10 +82,10 @@ public class TimelineModule
   private static class JdbiConfigurationProvider
       implements Provider<JdbiDataSourceConfiguration>
   {
-    private final ApplicationConfiguration config;
+    private final ApplicationDirectories config;
 
     @Inject
-    public JdbiConfigurationProvider(ApplicationConfiguration config) {
+    public JdbiConfigurationProvider(ApplicationDirectories config) {
       this.config = config;
     }
 
@@ -97,9 +95,9 @@ public class TimelineModule
 
       builder.withJdbcDriver("org.h2.Driver");
 
-      File basedir = config.getWorkingDirectory("db");
-      File dir = new File(basedir, "timeline/timeline");
-      builder.withJdbcUrl("jdbc:h2:" + dir.getAbsolutePath());
+      File basedir = config.getWorkDirectory("db/timeline");
+      File file = new File(basedir, basedir.getName());
+      builder.withJdbcUrl("jdbc:h2:" + file.getAbsolutePath());
 
       builder.withJdbcUser("root");
       builder.withJdbcPassword("not_really_used");
