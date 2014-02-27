@@ -21,6 +21,8 @@
 Ext.define('NX.ext.form.action.DirectSubmit', {
   override: 'Ext.form.action.DirectSubmit',
 
+  submitEmptyText: false,
+
   doSubmit: function () {
     var me = this,
         form = me.form,
