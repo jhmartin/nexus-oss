@@ -26,6 +26,7 @@ import org.sonatype.nexus.testsuite.timeline.TimelineITSupport;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,6 +38,7 @@ import static org.hamcrest.Matchers.hasSize;
  * @author cstamas
  * @since 2.6.1
  */
+@Ignore("Timeline uses Kazuki now, no more Protobuf persist files")
 public class PurgePersistFilesIT
     extends TimelineITSupport
 {

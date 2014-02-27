@@ -24,11 +24,13 @@ import org.sonatype.nexus.test.utils.UserCreationUtil;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.sonatype.nexus.test.utils.StatusMatchers.isSuccess;
 
+@Ignore("Timeline uses Kazuki now, no more Lucene tech in it")
 public class Nexus3929TimelineCorruptionIT
     extends AbstractNexusIntegrationTest
 {
