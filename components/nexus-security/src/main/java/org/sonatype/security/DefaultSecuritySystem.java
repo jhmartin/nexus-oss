@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -346,7 +347,7 @@ public class DefaultSecuritySystem
     userManager.updateUser(user);
     if (oldUser.getStatus() == UserStatus.active && user.getStatus() != oldUser.getStatus()) {
       // clear the realm authc caches as user got disabled
-      this.eventBus.post(new UserPrincipalsExpired(user.getUserId(), user.getSource()));
+      eventBus.post(new UserPrincipalsExpired(user.getUserId(), user.getSource()));
     }
 
     // then save the users Roles
@@ -369,7 +370,7 @@ public class DefaultSecuritySystem
     }
 
     // clear the realm authz caches as user might get roles changed
-    this.eventBus.post(new AuthorizationConfigurationChanged());
+    eventBus.post(new AuthorizationConfigurationChanged());
 
     return user;
   }
@@ -832,39 +833,54 @@ public class DefaultSecuritySystem
     getSecurityManager().setRealms(new ArrayList<Realm>(this.getRealmsFromConfigSource()));
   }
 
+  /**
+   * Looks up registered {@link AuthenticatingRealm}s, and clears their authc caches if they
+   * have it set.
+   *
+   * @since 2.8
+   */
   private void clearAuthcRealmCaches() {
     // NOTE: we don't need to iterate all the Sec Managers, they use the same Realms, so one is fine.
-    if (this.getSecurityManager().getRealms() != null) {
-      for (Realm realm : this.getSecurityManager().getRealms()) {
-        // check if its a AuthenticatingRealm, if so clear the cache
-        if (AuthenticatingRealm.class.isInstance(realm)) {
-          // clear the cache
-          AuthenticatingRealm aRealm = (AuthenticatingRealm) realm;
-          Cache cache = aRealm.getAuthenticationCache();
-          if (cache != null) {
-            cache.clear();
-          }
+    final Collection<Realm> realms = getSecurityManager().getRealms();
+    if (realms != null) {
+      for (Realm realm : realms) {
+        if (realm instanceof AuthenticatingRealm) {
+          clearIfNonNull(((AuthenticatingRealm) realm).getAuthenticationCache());
         }
       }
     }
   }
 
+  /**
+   * Looks up registered {@link AuthorizingRealm}s, and clears their authz caches if they
+   * have it set.
+   *
+   * @since 2.8
+   */
   private void clearAuthzRealmCaches() {
     // NOTE: we don't need to iterate all the Sec Managers, they use the same Realms, so one is fine.
-    if (this.getSecurityManager().getRealms() != null) {
-      for (Realm realm : this.getSecurityManager().getRealms()) {
-        // check if its a AuthorizingRealm, if so clear the cache
-        if (AuthorizingRealm.class.isInstance(realm)) {
-          // clear the cache
-          AuthorizingRealm aRealm = (AuthorizingRealm) realm;
-          Cache cache = aRealm.getAuthorizationCache();
-          if (cache != null) {
-            cache.clear();
-          }
+    final Collection<Realm> realms = getSecurityManager().getRealms();
+    if (realms != null) {
+      for (Realm realm : realms) {
+        if (realm instanceof AuthorizingRealm) {
+          clearIfNonNull(((AuthorizingRealm) realm).getAuthorizationCache());
         }
       }
     }
   }
+
+  /**
+   * Clears Shiro cache if passed instance is not {@code null}.
+   *
+   * @since 2.8
+   */
+  private void clearIfNonNull(@Nullable final Cache cache) {
+    if (cache != null) {
+      cache.clear();
+    }
+  }
+
+  // ==
 
   @Subscribe
   public void onEvent(final UserPrincipalsExpired evt) {

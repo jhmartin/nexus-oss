@@ -64,15 +64,22 @@ public abstract class AbstractLdapAuthenticatingRealm
     eventBus.register(this);
   }
 
+  /**
+   * Handler that clears caches when needed.
+   *
+   * @since 2.8
+   */
   @AllowConcurrentEvents
   @Subscribe
-  public void om(final LdapClearCacheEvent evt) {
+  public void on(final LdapClearCacheEvent evt) {
     clearIfNonNull(getAuthenticationCache());
     clearIfNonNull(getAuthorizationCache());
   }
 
   /**
    * Clears Shiro cache if passed instance is not {@code null}.
+   *
+   * @since 2.8
    */
   protected void clearIfNonNull(@Nullable final Cache cache) {
     if (cache != null) {
