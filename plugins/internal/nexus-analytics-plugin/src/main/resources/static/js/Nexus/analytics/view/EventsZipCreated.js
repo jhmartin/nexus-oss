@@ -1,4 +1,4 @@
-/**
+/*
  * Sonatype Nexus (TM) Open Source Version
  * Copyright (c) 2007-2013 Sonatype, Inc.
  * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
@@ -10,37 +10,33 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package org.sonatype.nexus.testsuite.analytics.client
-
-import groovy.transform.ToString
-import org.sonatype.nexus.client.core.subsystem.SiestaClient
-import org.sonatype.nexus.testsuite.analytics.client.Settings.SettingsXO
-
-import javax.ws.rs.GET
-import javax.ws.rs.PUT
-import javax.ws.rs.Path
+/*global NX, Ext, Nexus, Sonatype*/
 
 /**
- * Analytics Settings client.
+ * Events ZIP created window.
  *
  * @since 2.8
  */
-@Path("/service/siesta/analytics/settings")
-interface Settings
-extends SiestaClient
-{
+NX.define('Nexus.analytics.view.EventsZipCreated', {
+  extend: 'Nexus.wonderland.view.FileCreated',
+  xtype: 'nx-analytics-view-eventszip-created',
 
-  @GET
-  SettingsXO get()
+  requires: [
+    'Nexus.analytics.Icons'
+  ],
 
-  @PUT
-  void set(SettingsXO settings)
+  fileType: 'Events ZIP',
+  downloadButtonId: 'nx-analytics-button-eventszip-download',
 
-  @ToString(includePackage = false, includeNames = true)
-  static class SettingsXO
-  {
-    Boolean collection
-    Boolean autosubmit
+  /**
+   * @override
+   */
+  initComponent: function () {
+    var me = this;
+
+    me.fileIcon = Nexus.analytics.Icons.get('zip').variant('x32');
+
+    Nexus.analytics.view.EventsZipCreated.superclass.initComponent.apply(me, arguments);
   }
 
-}
+});
