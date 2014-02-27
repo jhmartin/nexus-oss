@@ -22,21 +22,31 @@ Ext.define('NX.ext.grid.plugin.FilterBox', {
    */
   init: function (grid) {
     var me = this,
-        tbar = grid.getDockedItems('toolbar[dock="top"]')[0];
+        tbar = grid.getDockedItems('toolbar[dock="top"]')[0],
+        items = [
+          '->',
+          {
+            xtype: 'nx-searchbox',
+            emptyText: 'filter',
+            listeners: {
+              search: me.onSearch,
+              searchcleared: me.onSearchCleared,
+              scope: me
+            }
+          }
+        ];
 
     me.callParent(arguments);
 
     if (tbar) {
-      tbar.add([
-        '->',
+      tbar.add(items);
+    }
+    else {
+      grid.addDocked([
         {
-          xtype: 'nx-searchbox',
-          emptyText: 'filter',
-          listeners: {
-            search: me.onSearch,
-            searchcleared: me.onSearchCleared,
-            scope: me
-          }
+          xtype: 'toolbar',
+          dock: 'top',
+          items: items
         }
       ]);
     }
