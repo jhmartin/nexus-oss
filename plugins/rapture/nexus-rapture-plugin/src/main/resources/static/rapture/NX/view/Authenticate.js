@@ -45,8 +45,7 @@ Ext.define('NX.view.Authenticate', {
         defaultType: 'textfield',
         defaults: {
           labelWidth: 100,
-          anchor: '100%',
-          htmlDecode: true
+          anchor: '100%'
         },
         items: [
           {

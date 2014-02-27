@@ -24,8 +24,7 @@ Ext.define('NX.view.SettingsForm', {
 
   defaults: {
     xtype: 'textfield',
-    allowBlank: false,
-    htmlDecode: true
+    allowBlank: false
   },
 
   buttonAlign: 'left',

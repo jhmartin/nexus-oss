@@ -40,7 +40,6 @@ Ext.define('NX.coreui.view.capability.Summary', {
         hideLabels: true,
         items: {
           xtype: 'textarea',
-          htmlDecode: true,
           helpText: "Optional notes about configured capability",
           name: 'notes',
           allowBlank: true,

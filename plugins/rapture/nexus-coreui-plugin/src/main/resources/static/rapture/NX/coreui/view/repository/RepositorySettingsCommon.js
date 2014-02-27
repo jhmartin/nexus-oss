@@ -16,8 +16,7 @@ Ext.define('NX.coreui.view.repository.RepositorySettingsCommon', {
 
   defaults: {
     xtype: 'textfield',
-    allowBlank: false,
-    htmlDecode: true
+    allowBlank: false
   },
 
   items: [
