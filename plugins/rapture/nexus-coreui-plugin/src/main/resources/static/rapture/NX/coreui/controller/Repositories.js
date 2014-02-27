@@ -50,10 +50,6 @@ Ext.define('NX.coreui.controller.Repositories', {
       selector: 'nx-coreui-repository-list'
     },
     {
-      ref: 'info',
-      selector: 'nx-coreui-repository-feature nx-info-panel'
-    },
-    {
       ref: 'settings',
       selector: 'nx-coreui-repository-feature nx-coreui-repository-settings-tab'
     }
@@ -125,17 +121,6 @@ Ext.define('NX.coreui.controller.Repositories', {
         settingsTab, settingsForm;
 
     if (Ext.isDefined(model)) {
-      me.getInfo().showInfo({
-        'Id': model.get('id'),
-        'Name': model.get('name'),
-        'Type': model.get('type'),
-        'Format': model.get('format'),
-        'Local status': me.getLocalStatus(model),
-        'Proxy mode': me.getProxyMode(model),
-        'Remote status': me.getRemoteStatus(model),
-        'Url': NX.util.Url.asLink(model.get('url'))
-      });
-
       settingsForm = me.createComponent(
           'settings',
           {
