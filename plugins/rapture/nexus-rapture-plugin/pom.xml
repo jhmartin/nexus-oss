@@ -71,6 +71,13 @@
       <type>${nexus-plugin.type}</type>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.sonatype.nexus.plugins</groupId>
+      <artifactId>nexus-wonderland-plugin</artifactId>
+      <type>${nexus-plugin.type}</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>

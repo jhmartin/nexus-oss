@@ -80,7 +80,7 @@ Ext.define('NX.controller.User', {
           click: me.login
         },
         'nx-authenticate button[action=authenticate]': {
-          click: me.authenticate
+          click: me.doAuthenticateAction
         },
         'nx-login form': {
           afterrender: me.installLoginEnterKey
@@ -144,11 +144,25 @@ Ext.define('NX.controller.User', {
     var me = this;
 
     if (me.hasUser()) {
-      me.showAuthenticateWindow(message, options);
+      me.showAuthenticateWindow(message, Ext.apply(options || {}, { authenticateAction: me.authenticate }));
     }
     else {
       me.showLoginWindow(options);
     }
+  },
+
+  /**
+   * @public
+   * Shows authentication window in order to retrieve an authentication token.
+   * @param {String} [message] Message to be shown in authentication window
+   * @param {Object} [options] TODO
+   */
+  doWithAuthenticationToken: function (message, options) {
+    var me = this;
+
+    me.showAuthenticateWindow(message,
+        Ext.apply(options || {}, { authenticateAction: me.retrieveAuthenticationToken })
+    );
   },
 
   /**
@@ -209,7 +223,7 @@ Ext.define('NX.controller.User', {
     me.keyNav = Ext.create('Ext.util.KeyNav', form.el, {
       enter: function () {
         if (form.isValid()) {
-          me.authenticate(form.down('button[action=authenticate]'));
+          me.doAuthenticateAction(form.down('button[action=authenticate]'));
         }
       },
       scope: this
@@ -246,6 +260,18 @@ Ext.define('NX.controller.User', {
   /**
    * @private
    */
+  doAuthenticateAction: function (button) {
+    var me = this,
+        win = button.up('window');
+
+    if (win.options && Ext.isFunction(win.options.authenticateAction)) {
+      win.options.authenticateAction.call(me, button);
+    }
+  },
+
+  /**
+   * @private
+   */
   authenticate: function (button) {
     var me = this,
         win = button.up('window'),
@@ -266,6 +292,33 @@ Ext.define('NX.controller.User', {
         win.close();
         if (win.options && Ext.isFunction(win.options.success)) {
           win.options.success.call(win.options.scope, win.options);
+        }
+      }
+    });
+  },
+
+  /**
+   * @private
+   */
+  retrieveAuthenticationToken: function (button) {
+    var me = this,
+        win = button.up('window'),
+        form = button.up('form'),
+        user = NX.State.getUser(),
+        values = Ext.applyIf(form.getValues(), { username: user ? user.id : undefined }),
+        userName = NX.util.Base64.encode(values.username),
+        userPass = NX.util.Base64.encode(values.password);
+
+    win.getEl().mask('Retrieving authentication token...');
+
+    me.logDebug('Retrieving authentication token...');
+
+    NX.direct.rapture_Security.authenticationToken(userName, userPass, function (response) {
+      win.getEl().unmask();
+      if (Ext.isDefined(response) && response.success) {
+        win.close();
+        if (win.options && Ext.isFunction(win.options.success)) {
+          win.options.success.call(win.options.scope, response.success.data, win.options);
         }
       }
     });

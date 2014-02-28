@@ -27,6 +27,8 @@ import javax.servlet.http.HttpSession;
 
 import org.sonatype.nexus.extdirect.DirectComponentSupport;
 import org.sonatype.nexus.rapture.StateContributor;
+import org.sonatype.nexus.util.Tokens;
+import org.sonatype.nexus.wonderland.AuthTicketService;
 import org.sonatype.security.SecuritySystem;
 import org.sonatype.security.authorization.Privilege;
 
@@ -35,10 +37,12 @@ import com.google.common.collect.Maps;
 import com.softwarementors.extjs.djn.config.annotations.DirectAction;
 import com.softwarementors.extjs.djn.config.annotations.DirectMethod;
 import com.softwarementors.extjs.djn.servlet.ssm.WebContextManager;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
 import org.apache.shiro.codec.Base64;
+import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.subject.Subject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -69,9 +73,14 @@ public class SecurityComponent
 
   private final SecuritySystem securitySystem;
 
+  private final AuthTicketService authTickets;
+
   @Inject
-  public SecurityComponent(final SecuritySystem securitySystem) {
+  public SecurityComponent(final SecuritySystem securitySystem,
+                           final AuthTicketService authTickets)
+  {
     this.securitySystem = checkNotNull(securitySystem);
+    this.authTickets = checkNotNull(authTickets);
   }
 
   @DirectMethod
@@ -111,6 +120,37 @@ public class SecurityComponent
         session.invalidate();
       }
     }
+  }
+
+  @DirectMethod
+  public String authenticationToken(final String base64Username,
+                                    final String base64Password) throws Exception
+  {
+    checkNotNull(base64Username);
+    checkNotNull(base64Password);
+
+    String username = Tokens.decodeBase64String(base64Username);
+    String password = Tokens.decodeBase64String(base64Password);
+    log.debug("Authenticate w/username: {}, password: {}", username, Tokens.mask(password));
+
+    // Require current user to be the requested user to authenticate
+    Subject subject = securitySystem.getSubject();
+    if (!subject.getPrincipal().toString().equals(username)) {
+      throw new Exception("Username mismatch");
+    }
+
+    // Ask the sec-manager to authenticate, this won't alter the current subject
+    RealmSecurityManager sm = securitySystem.getSecurityManager();
+    try {
+      sm.authenticate(new UsernamePasswordToken(username, password));
+    }
+    catch (AuthenticationException e) {
+      log.trace("Authentication failed", e);
+      throw new Exception("Authentication failed");
+    }
+
+    // At this point we should be authenticated, return a new ticket
+    return authTickets.createTicket();
   }
 
   @DirectMethod
