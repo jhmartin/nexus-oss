@@ -11,71 +11,81 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 Ext.define('NX.coreui.view.security.Anonymous', {
-  extend: 'Ext.Panel',
+  extend: 'NX.view.SettingsPanel',
   alias: 'widget.nx-coreui-security-anonymous',
 
-  layout: {
-    type: 'vbox',
-    align: 'stretch',
-    pack: 'start'
-  },
+  initComponent: function () {
+    var me = this;
 
-  maxWidth: 1024,
-
-  style: {
-    margin: '20px'
-  },
-
-  defaults: {
-    style: {
-      margin: '0px 0px 20px 0px'
-    }
-  },
-
-  items: [
-    // basic settings
-    {
-      xtype: 'form',
-      items: [
-        {
-          xtype: 'label',
-          html: '<p>Anonymous user access settings.</p>'
+    me.items = [
+      {
+        xtype: 'nx-settingsform',
+        settingsForm: true,
+        settingsFormTitle: 'Anonymous security settings',
+        api: {
+          load: 'NX.direct.coreui_SecurityAnonymous.read',
+          submit: 'NX.direct.coreui_SecurityAnonymous.update'
         },
-        {
-          xtype: 'checkbox',
-          boxLabel: 'Allow anonymous users to access the server'
-        },
-        {
-          xtype: 'fieldset',
-          title: 'Use custom anonymous user',
-          checkboxToggle: true,
-          collapsed: true,
-          items: [
-            {
-              xtype: 'label',
-              html: '<p>Override the default anonymous user.</p>'
-            },
-            {
-              xtype: 'textfield',
-              fieldLabel: 'Username',
-              emptyText: 'anonymous'
-            },
-            {
-              xtype: 'textfield',
-              fieldLabel: 'Password',
-              inputType: 'password',
-              emptyText: 'password'
+        items: [
+          {
+            xtype: 'label',
+            html: '<p>Anonymous user access settings.</p>'
+          },
+          {
+            xtype: 'checkbox',
+            name: 'enabled',
+            value: true,
+            boxLabel: 'Allow anonymous users to access the server',
+            listeners: {
+              change: me.handleUseCustomUser,
+              afterrender: me.handleUseCustomUser
             }
-          ]
-        },
-      ],
+          },
+          {
+            xtype: 'nx-optionalfieldset',
+            title: 'Use custom anonymous user',
+            itemId: 'useCustomUser',
+            checkboxToggle: true,
+            checkboxName: 'useCustomUser',
+            collapsed: true,
+            items: [
+              {
+                xtype: 'label',
+                html: '<p>Override the default anonymous user.</p>'
+              },
+              {
+                xtype: 'textfield',
+                name: 'username',
+                fieldLabel: 'Username',
+                emptyText: 'anonymous',
+                allowBlank: false
+              },
+              {
+                xtype: 'nx-password',
+                name: 'password',
+                fieldLabel: 'Password',
+                emptyText: 'password',
+                allowBlank: false
+              }
+            ]
+          },
+        ]
+      }
+    ];
 
-      buttonAlign: 'left',
-      buttons: [
-        { text: 'Save', ui: 'primary' },
-        { text: 'Discard' }
-      ]
+    me.callParent(arguments);
+  },
+
+  handleUseCustomUser: function (checkbox) {
+    var useCustomUser = checkbox.up('form').down('#useCustomUser');
+
+    if (checkbox.getValue()) {
+      useCustomUser.enable();
     }
-  ]
+    else {
+      useCustomUser.collapse();
+      useCustomUser.disable();
+    }
+  }
 
 });
