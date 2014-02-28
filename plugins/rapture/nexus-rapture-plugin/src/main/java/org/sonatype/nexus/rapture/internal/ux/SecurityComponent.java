@@ -129,12 +129,17 @@ public class SecurityComponent
     checkNotNull(base64Username);
     checkNotNull(base64Password);
 
+    Subject subject = securitySystem.getSubject();
+    if (subject == null || !subject.isAuthenticated()) {
+      authenticate(base64Username, base64Password);
+    }
+
     String username = Tokens.decodeBase64String(base64Username);
     String password = Tokens.decodeBase64String(base64Password);
     log.debug("Authenticate w/username: {}, password: {}", username, Tokens.mask(password));
 
     // Require current user to be the requested user to authenticate
-    Subject subject = securitySystem.getSubject();
+    subject = securitySystem.getSubject();
     if (!subject.getPrincipal().toString().equals(username)) {
       throw new Exception("Username mismatch");
     }
