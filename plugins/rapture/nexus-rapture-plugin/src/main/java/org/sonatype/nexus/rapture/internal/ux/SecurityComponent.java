@@ -41,8 +41,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.permission.WildcardPermission;
-import org.apache.shiro.codec.Base64;
-import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.subject.Subject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -100,9 +98,14 @@ public class SecurityComponent
                       final String base64Password,
                       final boolean rememberMe) throws Exception
   {
-    securitySystem.login(new UsernamePasswordToken(
-        Base64.decodeToString(base64Username), Base64.decodeToString(base64Password), rememberMe
-    ));
+    try {
+      securitySystem.login(new UsernamePasswordToken(
+          Tokens.decodeBase64String(base64Username), Tokens.decodeBase64String(base64Password), rememberMe
+      ));
+    }
+    catch (Exception e) {
+      throw new Exception("Authentication failed", e);
+    }
     return getUser();
   }
 
@@ -145,13 +148,11 @@ public class SecurityComponent
     }
 
     // Ask the sec-manager to authenticate, this won't alter the current subject
-    RealmSecurityManager sm = securitySystem.getSecurityManager();
     try {
-      sm.authenticate(new UsernamePasswordToken(username, password));
+      securitySystem.getSecurityManager().authenticate(new UsernamePasswordToken(username, password));
     }
     catch (AuthenticationException e) {
-      log.trace("Authentication failed", e);
-      throw new Exception("Authentication failed");
+      throw new Exception("Authentication failed", e);
     }
 
     // At this point we should be authenticated, return a new ticket
