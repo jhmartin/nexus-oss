@@ -198,7 +198,6 @@ Ext.define('NX.controller.Menu', {
    */
   navigateTo: function (bookmark) {
     var me = this,
-        userController = me.getController('User'),
         node, mode, feature, menuBookmark;
 
     if (bookmark) {
@@ -240,9 +239,9 @@ Ext.define('NX.controller.Menu', {
         }
         me.getFeatureMenu().getSelectionModel().deselectAll();
         if (feature) {
-          if (userController && feature.get('authenticationRequired') && NX.Permissions.available()) {
+          if (feature.get('authenticationRequired') && NX.Permissions.available()) {
             me.logDebug('Asking user to authenticate as feature exists but is not visible');
-            userController.askToAuthenticate();
+            NX.Security.askToAuthenticate();
           }
           me.selectFeature(me.createNotAvailableFeature(feature));
         }

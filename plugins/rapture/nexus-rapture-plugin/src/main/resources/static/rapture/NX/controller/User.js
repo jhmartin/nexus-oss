@@ -325,7 +325,7 @@ Ext.define('NX.controller.User', {
   },
 
   /**
-   * @private
+   * @public
    */
   logout: function () {
     var me = this;

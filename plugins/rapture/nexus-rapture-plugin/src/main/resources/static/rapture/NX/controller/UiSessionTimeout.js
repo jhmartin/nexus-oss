@@ -18,7 +18,8 @@
 Ext.define('NX.controller.UiSessionTimeout', {
   extend: 'Ext.app.Controller',
   requires: [
-    'Ext.ux.ActivityMonitor'
+    'Ext.ux.ActivityMonitor',
+    'NX.Security'
   ],
   mixins: {
     logAware: 'NX.LogAware'
@@ -157,7 +158,7 @@ Ext.define('NX.controller.UiSessionTimeout', {
                 + ' minutes',
             type: 'warning'
           });
-          me.getController('User').logout();
+          NX.Security.logout();
         }
       },
       interval: 1000,
