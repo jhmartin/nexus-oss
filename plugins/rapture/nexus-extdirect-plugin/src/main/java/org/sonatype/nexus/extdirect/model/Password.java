@@ -22,7 +22,7 @@ public class Password
     extends Base64String
 {
 
-  public static final String FAKE_PASSWORD = "|N|E|X|U|S|";
+  public static final String FAKE_PASSWORD = "|$|N|E|X|U|S|$|";
 
   public Password() {
   }
