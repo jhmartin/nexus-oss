@@ -111,10 +111,6 @@ Ext.define('NX.controller.Temp', {
         file: 'book_addresses.png',
         variants: ['x16', 'x32']
       },
-      'feature-security-atlassiancrowd': {
-        file: 'crowd.png',
-        variants: ['x16', 'x32']
-      },
 
       // user
       'feature-account': {
@@ -186,10 +182,6 @@ Ext.define('NX.controller.Temp', {
 
       {
         path: '/Security/LDAP',
-        visible: visibleIfLoggedIn
-      },
-      {
-        path: '/Security/Atlassian Crowd',
         visible: visibleIfLoggedIn
       },
       {
