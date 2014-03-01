@@ -318,7 +318,7 @@ Ext.define('NX.controller.User', {
       if (Ext.isDefined(response) && response.success) {
         win.close();
         if (win.options && Ext.isFunction(win.options.success)) {
-          win.options.success.call(win.options.scope, response.success.data, win.options);
+          win.options.success.call(win.options.scope, response.data, win.options);
         }
       }
     });
