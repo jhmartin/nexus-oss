@@ -106,12 +106,6 @@ Ext.define('NX.controller.Temp', {
         variants: ['x16', 'x32']
       },
 
-      // security
-      'feature-security-ldap': {
-        file: 'book_addresses.png',
-        variants: ['x16', 'x32']
-      },
-
       // user
       'feature-account': {
         file: 'user.png',
@@ -180,10 +174,6 @@ Ext.define('NX.controller.Temp', {
         visible: visibleIfLoggedIn
       },
 
-      {
-        path: '/Security/LDAP',
-        visible: visibleIfLoggedIn
-      },
       {
         path: '/System/PGP',
         visible: visibleIfLoggedIn
