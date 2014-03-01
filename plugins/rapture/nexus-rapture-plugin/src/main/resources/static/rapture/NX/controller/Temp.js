@@ -115,10 +115,6 @@ Ext.define('NX.controller.Temp', {
         file: 'emails.png',
         variants: ['x16', 'x32']
       },
-      'feature-usertoken': {
-        file: 'key.png',
-        variants: ['x16', 'x32']
-      },
       'feature-clientsettings': {
         file: 'setting_tools.png',
         variants: ['x16', 'x32']
@@ -265,11 +261,6 @@ Ext.define('NX.controller.Temp', {
       {
         mode: 'user',
         path: '/Account',
-        visible: visibleIfLoggedIn
-      },
-      {
-        mode: 'user',
-        path: '/User Token',
         visible: visibleIfLoggedIn
       },
       {

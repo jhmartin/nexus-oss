@@ -69,16 +69,6 @@ Ext.define('NX.coreui.controller.Plugin', {
         },
         visible: visibleIfLoggedIn
       },
-      {
-        mode: 'admin',
-        path: '/Security/User Token',
-        view: 'NX.coreui.view.security.UserToken',
-        iconConfig: {
-          file: 'key.png',
-          variants: ['x16', 'x32']
-        },
-        visible: visibleIfLoggedIn
-      },
 
       // system
       {
