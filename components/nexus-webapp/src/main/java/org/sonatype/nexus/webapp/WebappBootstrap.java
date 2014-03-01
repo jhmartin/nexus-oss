@@ -15,6 +15,7 @@ package org.sonatype.nexus.webapp;
 
 import java.io.File;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -44,6 +45,11 @@ import org.eclipse.sisu.space.BeanScanning;
 import org.eclipse.sisu.space.ClassSpace;
 import org.eclipse.sisu.space.URLClassSpace;
 import org.eclipse.sisu.wire.WireModule;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import org.osgi.framework.launch.Framework;
+import org.osgi.framework.launch.FrameworkFactory;
+import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +66,8 @@ public class WebappBootstrap
   private static final Logger log = LoggerFactory.getLogger(WebappBootstrap.class);
 
   private LockFile lockFile;
+
+  private Framework framework;
 
   private PlexusContainer container;
 
@@ -112,7 +120,16 @@ public class WebappBootstrap
       lockFile = new LockFile(new File(workDir, "nexus.lock"));
       checkState(lockFile.lock(), "Nexus work directory already in use: %s", workDir);
 
-      final ClassWorld world = new ClassWorld("nexus", Thread.currentThread().getContextClassLoader());
+      properties.put(Constants.FRAMEWORK_STORAGE, workDir + "/felix-cache");
+      properties.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+
+      framework = ServiceLoader.load(FrameworkFactory.class).iterator().next().newFramework(properties);
+
+      framework.init();
+      framework.start();
+
+      final Bundle systemBundle = framework.getBundleContext().getBundle();
+      final ClassWorld world = new ClassWorld("nexus", systemBundle.adapt(BundleWiring.class).getClassLoader());
       final ClassRealm realm = world.getRealm("nexus");
 
       // create the injector
@@ -190,6 +207,18 @@ public class WebappBootstrap
       container.dispose();
       context.removeAttribute(PlexusConstants.PLEXUS_KEY);
       container = null;
+    }
+
+    // stop OSGi framework
+    if (framework != null) {
+      try {
+        framework.stop();
+        framework.waitForStop(0);
+      }
+      catch (Exception e) {
+        log.error("Failed to stop OSGi framework", e);
+      }
+      framework = null;
     }
 
     // release lock
