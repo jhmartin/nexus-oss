@@ -29,6 +29,8 @@ import com.google.common.collect.Maps;
 public class ValidationResponse
     extends Response<Object>
 {
+  private List<String> messages;
+
   private Map<String, String> errors;
 
   public ValidationResponse(List<ValidationMessage> validationMessages) {
@@ -36,7 +38,15 @@ public class ValidationResponse
     if (validationMessages != null) {
       errors = Maps.newHashMap();
       for (ValidationMessage validationMessage : validationMessages) {
-        errors.put(validationMessage.getKey(), validationMessage.getMessage());
+        if ("*".equals(validationMessage.getKey())) {
+          if (messages == null) {
+            messages = Lists.newArrayList();
+          }
+          messages.add(validationMessage.getMessage());
+        }
+        else {
+          errors.put(validationMessage.getKey(), validationMessage.getMessage());
+        }
       }
     }
   }

@@ -47,8 +47,14 @@ Ext.define('NX.controller.ExtDirect', {
         NX.Messages.add({text: result.message, type: 'warning'});
         NX.Security.askToAuthenticate();
       }
-      else if (!Ext.isDefined(result.errors)) {
+      else if (Ext.isDefined(result.message)) {
         NX.Messages.add({ text: result.message, type: 'warning' });
+      }
+      else if (Ext.isDefined(result.messages)) {
+        var message = Ext.Array.from(result.messages).join('<br/>');
+        if (message) {
+          NX.Messages.add({ text: message, type: 'warning' });
+        }
       }
     }
 
