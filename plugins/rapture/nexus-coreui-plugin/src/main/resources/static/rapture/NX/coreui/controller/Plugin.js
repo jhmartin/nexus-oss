@@ -19,7 +19,6 @@ Ext.define('NX.coreui.controller.Plugin', {
   views: [
     'security.Anonymous',
     'security.Realms',
-    'security.UserToken',
     'system.General',
     'system.Http',
     'system.Notifications'
