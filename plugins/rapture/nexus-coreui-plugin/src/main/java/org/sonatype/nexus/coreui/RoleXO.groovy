@@ -24,10 +24,10 @@ import groovy.transform.ToString
 class RoleXO
 {
   String id
-
-  String realm
-
+  String source
   String name
-
   String description
+  Boolean readOnly
+  Set<String> privileges
+  Set<String> roles
 }

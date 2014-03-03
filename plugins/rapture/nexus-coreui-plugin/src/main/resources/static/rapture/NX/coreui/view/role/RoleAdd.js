@@ -10,15 +10,27 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-Ext.define('NX.coreui.model.Role', {
-  extend: 'Ext.data.Model',
-  fields: [
-    'id',
-    'source',
-    'name',
-    'description',
-    'readOnly',
-    'privileges',
-    'roles'
-  ]
+Ext.define('NX.coreui.view.role.RoleAdd', {
+  extend: 'NX.view.AddWindow',
+  alias: 'widget.nx-coreui-role-add',
+
+  title: 'Create new role',
+  defaultFocus: 'id',
+
+  initComponent: function () {
+    var me = this;
+
+    me.items = {
+      xtype: 'nx-coreui-role-settings',
+      api: {
+        submit: 'NX.direct.coreui_Role.create'
+      },
+      source: me.source
+    };
+
+    me.callParent(arguments);
+
+    me.down('#id').setReadOnly(false);
+  }
+
 });

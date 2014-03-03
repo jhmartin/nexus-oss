@@ -15,12 +15,19 @@ Ext.define('NX.coreui.controller.Roles', {
 
   list: 'nx-coreui-role-list',
 
-  stores: [
+  models: [
     'Role'
   ],
+  stores: [
+    'Role',
+    'RoleSource',
+    'RoleBySource'
+  ],
   views: [
+    'role.RoleAdd',
     'role.RoleFeature',
-    'role.RoleList'
+    'role.RoleList',
+    'role.RoleSettings'
   ],
   refs: [
     {
@@ -28,8 +35,8 @@ Ext.define('NX.coreui.controller.Roles', {
       selector: 'nx-coreui-role-list'
     },
     {
-      ref: 'info',
-      selector: 'nx-coreui-role-feature nx-info-panel'
+      ref: 'settings',
+      selector: 'nx-coreui-role-feature nx-coreui-role-settings'
     }
   ],
   icons: {
@@ -51,21 +58,206 @@ Ext.define('NX.coreui.controller.Roles', {
   },
   permission: 'security:roles',
 
+  /**
+   * @override
+   */
+  init: function () {
+    var me = this;
+
+    me.callParent();
+
+    me.listen({
+      controller: {
+        '#Refresh': {
+          refresh: me.loadRoleSource
+        }
+      },
+      store: {
+        '#RoleSource': {
+          load: me.onRoleSourceLoad
+        }
+      },
+      component: {
+        'nx-coreui-role-list': {
+          beforerender: me.loadRoleSource
+        },
+        'nx-coreui-role-list menuitem[action=newrole]': {
+          click: me.showAddWindowRole
+        },
+        'nx-coreui-role-list menuitem[action=newmapping]': {
+          click: me.showAddWindowMapping
+        },
+        'nx-coreui-role-add button[action=add]': {
+          click: me.create
+        },
+        'nx-coreui-role-settings button[action=save]': {
+          click: me.update
+        }
+      }
+    });
+  },
+
   getDescription: function (model) {
     return model.get('name');
   },
 
   onSelection: function (list, model) {
-    var me = this;
+    var me = this,
+        bottomBar;
 
     if (Ext.isDefined(model)) {
-      me.getInfo().showInfo({
-        'Id': model.get('id'),
-        'Realm': model.get('realm'),
-        'Name': model.get('name'),
-        'Description': model.get('description')
+      me.getSettings().loadRecord(model);
+      bottomBar = me.getSettings().getDockedItems('toolbar[dock="bottom"]')[0];
+      // TODO disable update when read only
+      if (model.get('readOnly')) {
+        bottomBar.hide();
+      }
+      else {
+        bottomBar.show();
+      }
+    }
+  },
+
+  /**
+   * @private
+   */
+  showAddWindowRole: function () {
+    Ext.widget('nx-coreui-role-add');
+  },
+
+  /**
+   * @private
+   */
+  showAddWindowMapping: function (menuItem) {
+    var me = this;
+    me.getRoleBySourceStore().load({
+      params: {
+        source: menuItem.source
+      }
+    });
+    Ext.widget('nx-coreui-role-add', { source: menuItem.source });
+  },
+
+  /**
+   * @private
+   * (Re)load role source store.
+   */
+  loadRoleSource: function () {
+    var me = this,
+        list = me.getList();
+
+    if (list) {
+      me.getRoleSourceStore().load();
+    }
+  },
+
+  /**
+   * @private
+   * (Re)create external role mapping entries.
+   */
+  onRoleSourceLoad: function (store) {
+    var me = this,
+        list = me.getList(),
+        newButton, menuItems = [];
+
+    if (list) {
+      newButton = list.down('button[action=new]');
+      newButton.menu.remove(1);
+      store.each(function (source) {
+        menuItems.push({
+          text: source.get('name'),
+          action: 'newmapping',
+          source: source.getId()
+        });
+      });
+      newButton.menu.add({
+        text: 'External Role Mapping',
+        menu: menuItems
       });
     }
+  },
+
+  /**
+   * @protected
+   * Enable 'Delete' when user has 'delete' permission and role is not read only.
+   */
+  bindDeleteButton: function (button) {
+    var me = this;
+    button.mon(
+        NX.Conditions.and(
+            NX.Conditions.isPermitted(me.permission, 'delete'),
+            NX.Conditions.gridHasSelection(me.list, function (model) {
+              return !model.get('readOnly');
+            })
+        ),
+        {
+          satisfied: button.enable,
+          unsatisfied: button.disable,
+          scope: button
+        }
+    );
+  },
+
+  /**
+   * @private
+   * Creates a new role.
+   */
+  create: function (button) {
+    var me = this,
+        win = button.up('window'),
+        form = button.up('form');
+
+    form.submit({
+      waitMsg: 'Creating role...',
+      success: function (form, action) {
+        win.close();
+        NX.Messages.add({
+          text: 'Role created: ' + me.getDescription(me.getRoleModel().create(action.result.data)),
+          type: 'success'
+        });
+        me.loadStoreAndSelect(action.result.data.id);
+      }
+    });
+  },
+
+  /**
+   * @private
+   * Updates a role.
+   */
+  update: function (button) {
+    var me = this,
+        form = button.up('form');
+
+    form.submit({
+      waitMsg: 'Updating role...',
+      success: function (form, action) {
+        NX.Messages.add({
+          text: 'Role updated: ' + me.getDescription(me.getRoleModel().create(action.result.data)),
+          type: 'success'
+        });
+        me.loadStore();
+      }
+    });
+  },
+
+  /**
+   * @private
+   * @override
+   * Deletes a role.
+   * @param model role to be deleted
+   */
+  deleteModel: function (model) {
+    var me = this,
+        description = me.getDescription(model);
+
+    NX.direct.coreui_Role.delete(model.getId(), function (response) {
+      me.loadStore();
+      if (Ext.isDefined(response) && response.success) {
+        NX.Messages.add({
+          text: 'Role deleted: ' + description, type: 'success'
+        });
+      }
+    });
   }
 
 });

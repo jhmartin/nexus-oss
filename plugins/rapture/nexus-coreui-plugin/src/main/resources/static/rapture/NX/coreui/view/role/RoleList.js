@@ -26,14 +26,18 @@ Ext.define('NX.coreui.view.role.RoleList', {
       }
     },
     {header: 'Name', dataIndex: 'name', flex: 1},
-    {header: 'Realm', dataIndex: 'realm'},
+    {header: 'Source', dataIndex: 'source'},
     {header: 'Description', dataIndex: 'description', flex: 1}
   ],
 
   tbar: [
-    { xtype: 'button', text: 'New', glyph: 'xf055@FontAwesome' /* fa-plus-circle */, action: 'new', disabled: true },
+    { xtype: 'button', text: 'New', glyph: 'xf055@FontAwesome' /* fa-plus-circle */, action: 'new', disabled: true,
+      menu: [
+        { text: 'Nexus Role', action: 'newrole' }
+      ]
+    },
     { xtype: 'button', text: 'Delete', glyph: 'xf056@FontAwesome' /* fa-minus-circle */, action: 'delete', disabled: true }
   ],
 
-  plugins: [ 'gridfilterbox' ]
+  plugins: ['gridfilterbox']
 });

@@ -15,10 +15,14 @@ package org.sonatype.nexus.coreui
 
 import com.softwarementors.extjs.djn.config.annotations.DirectAction
 import com.softwarementors.extjs.djn.config.annotations.DirectMethod
+import org.apache.shiro.authz.annotation.RequiresAuthentication
 import org.apache.shiro.authz.annotation.RequiresPermissions
 import org.sonatype.nexus.extdirect.DirectComponent
 import org.sonatype.nexus.extdirect.DirectComponentSupport
 import org.sonatype.security.SecuritySystem
+import org.sonatype.security.authorization.AuthorizationManager
+import org.sonatype.security.authorization.Role
+import org.sonatype.security.usermanagement.xml.SecurityXmlUserManager
 
 import javax.inject.Inject
 import javax.inject.Named
@@ -35,24 +39,111 @@ import javax.inject.Singleton
 class RoleComponent
 extends DirectComponentSupport
 {
+
+  public static final String DEFAULT_SOURCE = SecurityXmlUserManager.SOURCE
+
   @Inject
   SecuritySystem securitySystem
 
-  /**
-   * Retrieve a list of available roles.
-   */
+  @Inject
+  List<AuthorizationManager> authorizationManagers
+
   @DirectMethod
   @RequiresPermissions('security:roles:read')
   List<RoleXO> read() {
-    return securitySystem.listRoles().collect { input ->
-      def result = new RoleXO(
-          id: input.roleId,
-          realm: input.source,
-          name: input.name,
-          description: input.description
-      )
-      return result
+    // finding if a role is a mapped role (stupid but that is all nexus allows)
+    Map<String, List<String>> mappings = [:]
+    authorizationManagers.each { manager ->
+      if (manager.source != DEFAULT_SOURCE) {
+        manager.listRoles().each { role ->
+          def sources = mappings[role.roleId]
+          if (!sources) {
+            mappings << [(role.roleId): sources = []]
+          }
+          sources << role.source
+        }
+      }
     }
+    return securitySystem.listRoles(DEFAULT_SOURCE).collect { input ->
+      List<String> mappingsPerRole = mappings[input.roleId]
+      return asRoleXO(input, mappingsPerRole ? mappingsPerRole.join(',') : input.source)
+    }
+  }
+
+  @DirectMethod
+  @RequiresPermissions('security:roles:read')
+  List<RoleXO> readFromSource(String source) {
+    return securitySystem.listRoles(source).collect { input ->
+      return asRoleXO(input, input.source)
+    }
+  }
+
+  @DirectMethod
+  @RequiresAuthentication
+  @RequiresPermissions('security:roles:create')
+  RoleXO create(final RoleXO roleXO) {
+    return asRoleXO(securitySystem.getAuthorizationManager(DEFAULT_SOURCE).addRole(
+        new Role(
+            roleId: roleXO.id,
+            source: roleXO.source,
+            name: roleXO.name,
+            description: roleXO.description,
+            readOnly: false,
+            privileges: roleXO.privileges,
+            roles: roleXO.roles
+        )
+    ), roleXO.source)
+  }
+
+  @DirectMethod
+  @RequiresAuthentication
+  @RequiresPermissions('security:roles:update')
+  RoleXO update(final RoleXO roleXO) {
+    if (roleXO.id) {
+      return asRoleXO(securitySystem.getAuthorizationManager(DEFAULT_SOURCE).updateRole(
+          new Role(
+              roleId: roleXO.id,
+              source: roleXO.source,
+              name: roleXO.name,
+              description: roleXO.description,
+              readOnly: false,
+              privileges: roleXO.privileges,
+              roles: roleXO.roles
+          )
+      ), roleXO.source)
+    }
+    throw new IllegalArgumentException('Missing id for role to be updated')
+  }
+
+  @DirectMethod
+  @RequiresAuthentication
+  @RequiresPermissions('security:roles:delete')
+  void delete(final String id) {
+    securitySystem.getAuthorizationManager(DEFAULT_SOURCE).deleteRole(id)
+  }
+
+  @DirectMethod
+  List<ReferenceXO> sources() {
+    return authorizationManagers.findResults { manager ->
+      return manager.source == DEFAULT_SOURCE ? null : manager
+    }.collect { manager ->
+      return new ReferenceXO(
+          id: manager.source,
+          name: manager.source
+      )
+    }
+  }
+
+  private static RoleXO asRoleXO(Role input, String source) {
+    return new RoleXO(
+        id: input.roleId,
+        source: (source == DEFAULT_SOURCE || !source) ? 'Nexus' : source,
+        name: input.name,
+        description: input.description,
+        readOnly: input.readOnly,
+        privileges: input.privileges,
+        roles: input.roles
+    )
   }
 
 }
