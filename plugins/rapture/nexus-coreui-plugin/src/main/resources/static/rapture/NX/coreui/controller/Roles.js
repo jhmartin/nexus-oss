@@ -162,7 +162,9 @@ Ext.define('NX.coreui.controller.Roles', {
 
     if (list) {
       newButton = list.down('button[action=new]');
-      newButton.menu.remove(1);
+      if (newButton.menu.items.length > 1) {
+        newButton.menu.remove(1);
+      }
       store.each(function (source) {
         menuItems.push({
           text: source.get('name'),
