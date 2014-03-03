@@ -1,4 +1,4 @@
-/*
+/**
  * Sonatype Nexus (TM) Open Source Version
  * Copyright (c) 2007-2013 Sonatype, Inc.
  * All rights reserved. Includes the third-party code listed at http://links.sonatype.com/products/nexus/oss/attributions.
@@ -10,26 +10,21 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-Ext.define('NX.coreui.store.RepositoryOfType', {
-  extend: 'Ext.data.Store',
-  model: 'NX.coreui.model.RepositoryReference',
 
-  proxy: {
-    type: 'direct',
-    paramOrder: 'type,format',
+package org.sonatype.nexus.coreui
 
-    api: {
-      read: 'NX.direct.coreui_Repository.filterBy'
-    },
+import groovy.transform.ToString
 
-    reader: {
-      type: 'json',
-      root: 'data',
-      idProperty: 'id',
-      successProperty: 'success'
-    }
-  },
-
-  sortOnLoad: true,
-  sorters: { property: 'id', direction: 'ASC' }
-});
+/**
+ * Privilege exchange object.
+ *
+ * @since 2.8
+ */
+@ToString(includePackage = false, includeNames = true)
+class PrivilegeRepositoryTargetXO
+{
+  String name
+  String description
+  String repositoryTargetId
+  String repositoryId
+}

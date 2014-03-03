@@ -192,7 +192,7 @@ extends DirectComponentSupport
    */
   @DirectMethod
   @RequiresPermissions('nexus:repositories:read')
-  List<ReferenceXO> filterBy(final String type, final String format) {
+  List<RepositoryReferenceXO> filterBy(final String type, final String format) {
     def List<Repository> repositories
     if (type) {
       def clazz = typesToClass[type]
@@ -210,9 +210,10 @@ extends DirectComponentSupport
       }
     }
     repositories.collect {
-      new ReferenceXO(
+      new RepositoryReferenceXO(
           id: it.id,
-          name: it.name
+          name: it.name,
+          format: it.repositoryContentClass.id
       )
     }
   }

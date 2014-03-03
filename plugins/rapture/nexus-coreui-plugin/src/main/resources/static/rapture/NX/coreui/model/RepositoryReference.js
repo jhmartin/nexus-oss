@@ -10,12 +10,11 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-Ext.define('NX.coreui.view.privilege.Feature', {
-  extend: 'NX.view.masterdetail.Panel',
-  alias: 'widget.nx-coreui-privilege-feature',
-
-  list: 'nx-coreui-privilege-list',
-
-  iconName: 'privilege-default'
-
+Ext.define('NX.coreui.model.RepositoryReference', {
+  extend: 'Ext.data.Model',
+  fields: [
+    'id',
+    'name',
+    { name: 'format', defaultValue: undefined }
+  ]
 });

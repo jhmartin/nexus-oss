@@ -10,7 +10,12 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-Ext.define('NX.coreui.view.privilege.List', {
+/**
+ * Privilege grid.
+ *
+ * @since 2.8
+ */
+Ext.define('NX.coreui.view.privilege.PrivilegeList', {
   extend: 'Ext.grid.Panel',
   alias: 'widget.nx-coreui-privilege-list',
 
@@ -25,14 +30,22 @@ Ext.define('NX.coreui.view.privilege.List', {
         return 'privilege-default';
       }
     },
-    {header: 'Name', dataIndex: 'name', flex: 1},
-    {header: 'Description', dataIndex: 'description', flex: 1}
+    { header: 'Name', dataIndex: 'name', flex: 1 },
+    { header: 'Description', dataIndex: 'description', flex: 1 },
+    { header: 'Type', dataIndex: 'typeName', flex: 1 },
+    { header: 'Target', dataIndex: 'repositoryTargetName', flex: 1 },
+    { header: 'Repository', dataIndex: 'repositoryName', flex: 1 },
+    { header: 'Method', dataIndex: 'method', flex: 1 }
   ],
 
   tbar: [
-    { xtype: 'button', text: 'New', glyph: 'xf055@FontAwesome' /* fa-plus-circle */, action: 'new', disabled: true },
+    { xtype: 'button', text: 'New', glyph: 'xf055@FontAwesome' /* fa-plus-circle */, action: 'new', disabled: true,
+      menu: [
+        { text: 'Repository Target Privilege', action: 'newrepositorytarget' }
+      ]
+    },
     { xtype: 'button', text: 'Delete', glyph: 'xf056@FontAwesome' /* fa-minus-circle */, action: 'delete', disabled: true }
   ],
 
-  plugins: [ 'gridfilterbox' ]
+  plugins: ['gridfilterbox']
 });

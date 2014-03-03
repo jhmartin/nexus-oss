@@ -24,8 +24,14 @@ import groovy.transform.ToString
 class PrivilegeXO
 {
   String id
-
   String name
-
   String description
+  String type
+  String typeName
+  Boolean readOnly
+  String method
+  String repositoryId
+  String repositoryName
+  String repositoryTargetId
+  String repositoryTargetName
 }
