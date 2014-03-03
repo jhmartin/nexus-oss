@@ -19,8 +19,8 @@ Ext.define('NX.coreui.controller.Roles', {
     'Role'
   ],
   views: [
-    'role.Feature',
-    'role.List'
+    'role.RoleFeature',
+    'role.RoleList'
   ],
   refs: [
     {
