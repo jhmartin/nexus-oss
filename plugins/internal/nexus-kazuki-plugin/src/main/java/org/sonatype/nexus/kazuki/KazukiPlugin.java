@@ -10,33 +10,32 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-
-package org.sonatype.nexus.plugins.bcprov;
+package org.sonatype.nexus.kazuki;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.sonatype.nexus.plugin.PluginIdentity;
 
-import com.google.common.base.Throwables;
+import io.kazuki.v0.PackageVersion;
 import org.eclipse.sisu.EagerSingleton;
 import org.jetbrains.annotations.NonNls;
 
 /**
- * Crypto plugin.
+ * Kazuki plugin.
  *
  * @since 2.8
  */
 @Named
 @EagerSingleton
-public class CryptoPlugin
+public class KazukiPlugin
     extends PluginIdentity
 {
   /**
    * Prefix for ID-like things.
    */
   @NonNls
-  public static final String ID_PREFIX = "crypto";
+  public static final String ID_PREFIX = "kazuki";
 
   /**
    * Expected groupId for plugin artifact.
@@ -50,19 +49,25 @@ public class CryptoPlugin
   @NonNls
   public static final String ARTIFACT_ID = "nexus-" + ID_PREFIX + "-plugin";
 
+  /**
+   * Prefix for @Named configuration.
+   */
+  public static final String CONFIG_PREFIX = "${" + ID_PREFIX;
+
+  /**
+   * Prefix for REST resources
+   */
+  public static final String REST_PREFIX = "/" + ID_PREFIX;
+
+  /**
+   * Prefix for permissions.
+   */
+  public static final String PERMISSION_PREFIX = "nexus:" + ID_PREFIX + ":";
+
   @Inject
-  public CryptoPlugin() throws Exception {
+  public KazukiPlugin() throws Exception {
     super(GROUP_ID, ARTIFACT_ID);
-    try {
-      if (!JCETester.isUnlimitedStrengthPolicyInstalled()) {
-        log.warn(
-            "This JVM does not have JCE Unlimited Strength Jurisdiction Policy Files installed, required by {} plugin.",
-            getCoordinates()
-        );
-      }
-    }
-    catch (RuntimeException e) {
-      throw new AssertionError("Unsuitable JVM for running Nexus", e);
-    }
+
+    log.info("Kazuki version: {}", PackageVersion.VERSION);
   }
 }
