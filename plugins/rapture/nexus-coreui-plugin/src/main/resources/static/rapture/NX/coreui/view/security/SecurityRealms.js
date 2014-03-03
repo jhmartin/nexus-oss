@@ -10,35 +10,24 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-Ext.define('NX.coreui.view.security.Realms', {
-  extend: 'Ext.Panel',
+Ext.define('NX.coreui.view.security.SecurityRealms', {
+  extend: 'NX.view.SettingsPanel',
   alias: 'widget.nx-coreui-security-realms',
   requires: [
     'NX.ext.form.field.ItemSelector'
   ],
 
-  layout: {
-    type: 'vbox',
-    align: 'stretch',
-    pack: 'start'
-  },
-
-  maxWidth: 1024,
-
-  style: {
-    margin: '20px'
-  },
-
-  defaults: {
-    style: {
-      margin: '0px 0px 20px 0px'
-    }
-  },
-
   items: [
     // basic settings
     {
-      xtype: 'form',
+      xtype: 'nx-settingsform',
+      settingsForm: true,
+      settingsFormTitle: 'Security Realms settings',
+      api: {
+        load: 'NX.direct.coreui_SecurityRealm.read',
+        submit: 'NX.direct.coreui_SecurityRealm.update'
+      },
+
       items: [
         {
           xtype: 'label',
@@ -46,30 +35,15 @@ Ext.define('NX.coreui.view.security.Realms', {
         },
         {
           xtype: 'nx-itemselector',
-          buttons: [ 'up', 'add', 'remove', 'down' ],
+          name: 'realms',
+          buttons: ['up', 'add', 'remove', 'down'],
           fromTitle: 'Available',
           toTitle: 'Selected',
-          store: Ext.create('Ext.data.ArrayStore', {
-            fields: [
-                'id', 'text'
-            ],
-            data: [
-              [ 'default', 'Default Realm' ],
-              [ 'fancy', 'Fancy Pants Realm' ],
-              [ 'foo', 'Foo Realm' ],
-              [ 'bar', 'Bar Realm' ],
-              [ 'baz', 'Baz Realm' ],
-              [ 'qux', 'Qux Realm' ]
-            ]
-          }),
-          displayField: 'text'
+          store: 'RealmType',
+          valueField: 'id',
+          displayField: 'name',
+          delimiter: null
         }
-      ],
-
-      buttonAlign: 'left',
-      buttons: [
-        { text: 'Save', ui: 'primary' },
-        { text: 'Discard' }
       ]
     }
   ]

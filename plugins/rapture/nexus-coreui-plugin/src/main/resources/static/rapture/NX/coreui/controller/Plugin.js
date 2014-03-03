@@ -18,7 +18,6 @@ Ext.define('NX.coreui.controller.Plugin', {
 
   views: [
     'security.Anonymous',
-    'security.Realms',
     'system.General',
     'system.Http',
     'system.Notifications'
@@ -54,16 +53,6 @@ Ext.define('NX.coreui.controller.Plugin', {
         view: 'NX.coreui.view.security.Anonymous',
         iconConfig: {
           file: 'user_silhouette.png',
-          variants: ['x16', 'x32']
-        },
-        visible: visibleIfLoggedIn
-      },
-      {
-        mode: 'admin',
-        path: '/Security/Realms',
-        view: 'NX.coreui.view.security.Realms',
-        iconConfig: {
-          file: 'shield.png',
           variants: ['x16', 'x32']
         },
         visible: visibleIfLoggedIn

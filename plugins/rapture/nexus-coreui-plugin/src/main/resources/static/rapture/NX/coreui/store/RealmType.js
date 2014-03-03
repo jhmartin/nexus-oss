@@ -10,24 +10,31 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-Ext.define('NX.coreui.app.PluginConfig', {
+/**
+ * Security Realm model.
+ *
+ * @since 2.8
+ */
+Ext.define('NX.coreui.store.RealmType', {
+  extend: 'Ext.data.Store',
+  model: 'NX.coreui.model.Reference',
 
-  namespaces: [
-    'NX.coreui'
-  ],
+  proxy: {
+    type: 'direct',
+    paramsAsHash: false,
 
-  controllers: [
-    'NX.coreui.controller.Capabilities',
-    'NX.coreui.controller.MavenUpload',
-    'NX.coreui.controller.Plugin',
-    'NX.coreui.controller.PluginConsole',
-    'NX.coreui.controller.Repositories',
-    'NX.coreui.controller.RepositoryTargets',
-    'NX.coreui.controller.RepositoryRoutes',
-    'NX.coreui.controller.Privileges',
-    'NX.coreui.controller.Roles',
-    'NX.coreui.controller.SecurityRealms',
-    'NX.coreui.controller.Tasks',
-    'NX.coreui.controller.Users'
-  ]
+    api: {
+      read: 'NX.direct.coreui_SecurityRealm.realmTypes'
+    },
+
+    reader: {
+      type: 'json',
+      root: 'data',
+      idProperty: 'id',
+      successProperty: 'success'
+    }
+  },
+
+  sortOnLoad: true,
+  sorters: { property: 'name', direction: 'ASC' }
 });
